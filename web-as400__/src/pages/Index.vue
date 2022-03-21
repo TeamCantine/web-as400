@@ -10,8 +10,10 @@
         use-input
         input-debounce="0"
         label="Simple filter"
+        clearable
         :options="options"
         @filter="filterFn"
+        @update:model-value="showMe"
         style="width: 250px"
         behavior="menu"
       >
@@ -26,6 +28,7 @@
 
 
   <q-toggle v-model="grid" label="Grid" class="q-mb-md" />
+
     <q-table
     class="my-sticky-header-table"
       dense
@@ -70,14 +73,15 @@ export default {
 
   data() {
     return {
-      model: ref(null),
+      model: null,
       stringOptions: [
-        'Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'
       ],
       options:  this.stringOptions,
-      separator: ref("vertical"),
-      filter: ref(''),
-      grid:ref(false),
+
+
+      separator: "vertical",
+      filter: '',
+      grid:false,
       loading: false,
       fileName: "ROLE_USER",
       lib: "WRKJEXP",
@@ -124,12 +128,13 @@ export default {
   },
   methods: {
 
-
+    showMe(rr){
+      this.loadFiles()
+    },
     filterFn (val, update) {
         if (val === '') {
           update(() => {
             this.options = this.stringOptions
-            console.log(this.model)
           })
           return
         }
@@ -137,7 +142,6 @@ export default {
         update(() => {
           const needle = val.toLowerCase()
           this.options = this.stringOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)
-          console.log(this.options)
 
         })
       },
@@ -148,9 +152,11 @@ export default {
       this.loading = true;
       try {
         const data = {
-          lib: this.lib,
-          fileName: this.fileName,
+          lib: this.model,
+          fileName: "GCPRO00F",
         };
+        console.log(data)
+      ;
         await this.$store.dispatch("files/getFilesAction", data);
         this.rows = this.$store.getters["files/getFilesGetter"];
         this.loading = false;
@@ -160,9 +166,27 @@ export default {
       }
     },
 
+    async loadUsers() {
+      try {
+        const data = {
+          user: "",
+        };
+        await this.$store.dispatch("users/getUsersAction", data);
+
+
+         (this.$store.getters["users/getUsersGetter"]).forEach(element => {
+          this.stringOptions.push(element.TABLE_SCHEMA)
+         });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+
   },
   created() {
-    this.loadFiles();
+    //this.loadFiles();
+   this.loadUsers()
   },
 };
 </script>

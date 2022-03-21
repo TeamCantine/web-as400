@@ -2,6 +2,7 @@ import { store } from 'quasar/wrappers'
 import { createStore } from 'vuex'
 import fileModule from "../store/module-example/index.js"
 
+
 // import example from './module-example'
 
 /*
@@ -16,7 +17,8 @@ import fileModule from "../store/module-example/index.js"
 export default store(function( /* { ssrContext } */ ) {
     const Store = createStore({
         modules: {
-            files: fileModule
+            files: fileModule,
+            users: fileModule
         },
 
         // enable strict mode (adds overhead!)
