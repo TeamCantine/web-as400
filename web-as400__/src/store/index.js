@@ -18,7 +18,8 @@ export default store(function( /* { ssrContext } */ ) {
     const Store = createStore({
         modules: {
             files: fileModule,
-            users: fileModule
+            users: fileModule,
+            filenames: fileModule
         },
 
         // enable strict mode (adds overhead!)

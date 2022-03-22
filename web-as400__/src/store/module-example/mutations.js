@@ -5,3 +5,7 @@ export function setFilesMutation(state, payload) {
 export function setUsersMutation(state, payload) {
     state.users = payload.obj;
 }
+
+export function setFilenamesMutation(state, payload) {
+  state.filenames = payload.obj;
+}

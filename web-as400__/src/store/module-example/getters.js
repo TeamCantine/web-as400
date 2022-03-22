@@ -5,3 +5,8 @@ export function getFilesGetter(state) {
 export function getUsersGetter(state) {
     return state.users;
 };
+
+
+export function getFilenamesGetter(state) {
+  return state.filenames;
+};
