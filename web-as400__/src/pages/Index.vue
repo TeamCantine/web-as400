@@ -1,52 +1,55 @@
 <template>
   <div class="q-pa-md">
-    <div class="q-gutter-md row q-mt-md">
-      <q-select
-        filled
-        v-model="model"
-        use-input
-        input-debounce="0"
-        label="LIBDAT"
-        clearable
-        :options="options"
-        @filter="filterFn"
-        @update:model-value="onClickLibdat"
-        style="width: 250px"
-        behavior="menu"
-      >
-        <template v-slot:no-option>
-          <q-item>
-            <q-item-section class="text-grey">No results</q-item-section>
-          </q-item>
-        </template>
-      </q-select>
+    <q-card class="q-my-md">
+      <q-card-section class="q-py-lg q-px-lg">
+        <div class="text-h6 q-my-md">Cerca dettagli file</div>
 
-      <q-select
-        filled
-        v-model="fileNameModel"
-        use-input
-        input-debounce="0"
-        label="FILE"
-        clearable
-        :options="fileNamesOptions"
-        @filter="filterFileNames"
-        @update:model-value="onClickFilename"
-        style="width: 250px"
-        behavior="menu"
-      >
-        <template v-slot:no-option>
-          <q-item>
-            <q-item-section class="text-grey">No results</q-item-section>
-          </q-item>
-        </template>
-      </q-select>
-    </div>
+        <div class="q-gutter-md row">
+          <q-select
+            filled
+            v-model="model"
+            use-input
+            input-debounce="0"
+            label="LIBDAT"
+            clearable
+            :options="options"
+            @filter="filterFn"
+            @update:model-value="onClickLibdat"
+            behavior="menu"
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">No results</q-item-section>
+              </q-item>
+            </template>
+          </q-select>
 
-    <q-toggle v-model="grid" label="Grid" class="q-mb-md" />
+          <q-select
+            filled
+            v-model="fileNameModel"
+            use-input
+            input-debounce="0"
+            label="FILE"
+            clearable
+            :options="fileNamesOptions"
+            @filter="filterFileNames"
+            @update:model-value="onClickFilename"
+            behavior="menu"
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">No results</q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </div>
+      </q-card-section>
+    </q-card>
 
     <q-table
       class="my-sticky-header-table"
       dense
+      auto-width
       :grid="grid"
       :rows="rows"
       :columns="columns"
@@ -58,41 +61,51 @@
       :rowsPerPage="30"
       :rows-per-page-options="[0, 8, 18]"
       style="height: 500px"
-      :table-header-style="{ backgroundColor: '#ff0000' }"
       :filter="filter"
     >
-      <template v-slot:top-right>
-        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+
+    <template v-slot:top-right>
+        <q-input
+          borderless
+          dense
+          debounce="300"
+          v-model="filter"
+          placeholder="Search"
+        >
           <template v-slot:append>
             <q-icon name="search" />
+            <q-toggle v-model="grid" label="Grid" />
           </template>
         </q-input>
+
+        <q-btn
+        class="q-ml-md"
+          color="primary"
+          icon-right="archive"
+          label="Export to csv"
+          no-caps
+          @click="exportTable"
+        />
       </template>
     </q-table>
   </div>
 </template>
 
 <script>
-import { ref } from "vue";
-
+import { exportFile } from "quasar";
 export default {
-
   data() {
     return {
-
       model: null,
-      stringOptions: [
-      ],
+      stringOptions: [],
       options: this.stringOptions,
 
       fileNameModel: null,
-      filenamesArray: [
-      ],
+      filenamesArray: [],
       fileNamesOptions: this.filenamesArray,
 
-
       separator: "vertical",
-      filter: '',
+      filter: "",
       grid: false,
       loading: false,
       fileName: "ROLE_USER",
@@ -104,6 +117,14 @@ export default {
           label: "CAMPO",
           field: "COLUMN_NAME",
           sortable: true,
+          align: "center",
+        },
+        {
+          name: "COLUMN_TEXT",
+          label: "DESCRIZIONE",
+          field: "COLUMN_TEXT",
+          sortable: true,
+          align: "left",
         },
         {
           name: "DATA_TYPE",
@@ -139,56 +160,96 @@ export default {
     };
   },
   methods: {
+    exportTable() {
+      // naive encoding to csv format
+      const content = [this.columns.map((col) => this.wrapCsvValue(col.label))]
+        .concat(
+          this.rows.map((row) =>
+            this.columns
+              .map((col) =>
+                this.wrapCsvValue(
+                  typeof col.field === "function"
+                    ? col.field(row)
+                    : row[col.field === void 0 ? col.name : col.field],
+                  col.format
+                )
+              )
+              .join(",")
+          )
+        )
+        .join("\r\n");
+
+      const status = exportFile("table-export.csv", content, "text/csv");
+
+      if (status !== true) {
+      }
+    },
+
+    wrapCsvValue(val, formatFn) {
+      let formatted = formatFn !== void 0 ? formatFn(val) : val;
+
+      formatted =
+        formatted === void 0 || formatted === null ? "" : String(formatted);
+
+      formatted = formatted.split('"').join('""');
+      /**
+       * Excel accepts \n and \r in strings, but some other CSV parsers do not
+       * Uncomment the next two lines to escape new lines
+       */
+      // .split('\n').join('\\n')
+      // .split('\r').join('\\r')
+
+      return `"${formatted}"`;
+    },
 
     onClickLibdat(rr) {
-      console.log("onClickLibdat")
-      this.loadFilenames()
-      this.fileNameModel = null
+      console.log("onClickLibdat");
+      this.loadFilenames();
+      this.fileNameModel = null;
     },
     onClickFilename(rr) {
-      console.log("onClickFilename")
-      this.loadFiles()
+      console.log("onClickFilename");
+      this.loadFiles();
     },
     filterFileNames(val, update) {
-      if (val === '') {
+      if (val === "") {
         update(() => {
-          this.fileNamesOptions = this.filenamesArray
-        })
-        return
+          this.fileNamesOptions = this.filenamesArray;
+        });
+        return;
       }
 
       update(() => {
-        const needle = val.toLowerCase()
-        this.fileNamesOptions = this.filenamesArray.filter(v => v.toLowerCase().indexOf(needle) > -1)
-
-      })
+        const needle = val.toLowerCase();
+        this.fileNamesOptions = this.filenamesArray.filter(
+          (v) => v.toLowerCase().indexOf(needle) > -1
+        );
+      });
     },
     filterFn(val, update) {
-      if (val === '') {
+      if (val === "") {
         update(() => {
-          this.options = this.stringOptions
-        })
-        return
+          this.options = this.stringOptions;
+        });
+        return;
       }
 
       update(() => {
-        const needle = val.toLowerCase()
-        this.options = this.stringOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)
-
-      })
+        const needle = val.toLowerCase();
+        this.options = this.stringOptions.filter(
+          (v) => v.toLowerCase().indexOf(needle) > -1
+        );
+      });
     },
-
-
 
     async loadFiles() {
       this.loading = true;
       try {
         const data = {
           lib: this.model,
-          fileName: this.fileNameModel,
+          fileName: this.fileNameModel.split("-->")[0].trim(),
         };
         //  console.log(data)
-        ;
         await this.$store.dispatch("files/getFilesAction", data);
         this.rows = this.$store.getters["files/getFilesGetter"];
         this.loading = false;
@@ -199,15 +260,18 @@ export default {
     },
 
     async loadFilenames() {
-
       try {
         const data = {
           filename: this.model,
         };
         await this.$store.dispatch("filenames/getFilenamesAction", data);
-        (this.$store.getters["filenames/getFilenamesGetter"]).forEach(element => {
-          this.filenamesArray.push(element.TABLE_NAME)
-        });
+        this.$store.getters["filenames/getFilenamesGetter"].forEach(
+          (element) => {
+            this.filenamesArray.push(
+              element.TABLE_NAME + " --> " + element.TABLE_TEXT
+            );
+          }
+        );
       } catch (error) {
         console.log(error);
       }
@@ -220,23 +284,20 @@ export default {
         };
         await this.$store.dispatch("users/getUsersAction", data);
 
-        (this.$store.getters["users/getUsersGetter"]).forEach(element => {
-          this.stringOptions.push(element.TABLE_SCHEMA)
+        this.$store.getters["users/getUsersGetter"].forEach((element) => {
+          this.stringOptions.push(element.TABLE_SCHEMA);
         });
       } catch (error) {
         console.log(error);
       }
     },
-
-
   },
   created() {
     //this.loadFiles();
-    this.loadUsers()
+    this.loadUsers();
   },
 };
 </script>
-
 
 <style lang="sass">
 .my-sticky-header-table
@@ -249,7 +310,7 @@ export default {
     /* bg color is important for th; just specify one */
     background-color: #eeeeee
     color: #673BB6
-    height: 40px
+    height: 52px
 
   thead tr th
     position: sticky

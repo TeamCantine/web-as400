@@ -15,7 +15,12 @@
           AS-DB-helper
         </q-toolbar-title>
 
-        <div>Profile {{ $q.version }}</div>
+
+        <div>
+          Dark mode <q-toggle color="red" v-model="dark" @click="$q.dark.toggle()" />
+        </div>
+
+
       </q-toolbar>
     </q-header>
 
@@ -50,10 +55,10 @@ import EssentialLink from 'components/EssentialLink.vue'
 
 const linksList = [
   {
-    title: 'Docs',
+    title: 'Prove',
     caption: 'quasar.dev',
     icon: 'school',
-    link: 'https://quasar.dev'
+    to: '/prove'
   },
   {
     title: 'Github',
@@ -104,13 +109,13 @@ export default defineComponent({
 
   setup () {
     const leftDrawerOpen = ref(false)
-
+const dark = ref(false)
     return {
       essentialLinks: linksList,
       leftDrawerOpen,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
-      }
+      },dark
     }
   }
 })
