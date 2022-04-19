@@ -10,3 +10,8 @@ export function getUsersGetter(state) {
 export function getFilenamesGetter(state) {
   return state.filenames;
 };
+
+
+export function getQueriesGetter(state) {
+  return state.queries;
+};

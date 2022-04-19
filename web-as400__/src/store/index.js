@@ -19,7 +19,8 @@ export default store(function( /* { ssrContext } */ ) {
         modules: {
             files: fileModule,
             users: fileModule,
-            filenames: fileModule
+            filenames: fileModule,
+            queries:fileModule
         },
 
         // enable strict mode (adds overhead!)

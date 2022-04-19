@@ -9,3 +9,7 @@ export function setUsersMutation(state, payload) {
 export function setFilenamesMutation(state, payload) {
   state.filenames = payload.obj;
 }
+
+export function setQueriesMutation(state, payload) {
+  state.queries = payload.obj;
+}

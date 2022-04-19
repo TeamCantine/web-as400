@@ -8,7 +8,9 @@ const routes = [{
             { path: 'prove', component: () =>
                     import ('pages/prove.vue') },
                     { path: 'home', component: () =>
-                    import ('pages/Index.vue') }
+                    import ('pages/Index.vue') },
+                    { path: 'query', component: () =>
+                    import ('pages/Query.vue') }
         ]
     },
 

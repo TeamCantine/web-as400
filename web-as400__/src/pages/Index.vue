@@ -2,16 +2,15 @@
   <div class="q-pa-md">
     <q-card class="q-my-md">
       <q-card-section class="q-py-lg q-px-lg">
-
-  <div class="q-pa-lg text-h6 ">
-    <q-option-group
-      v-model="group"
-      @update:model-value="onGroupChange"
-      :options="optionsGroup"
-      color="primary"
-      inline
-    />
-  </div>
+        <div class="q-pa-lg text-h6">
+          <q-option-group
+            v-model="group"
+            @update:model-value="onGroupChange"
+            :options="optionsGroup"
+            color="primary"
+            inline
+          />
+        </div>
 
         <div class="q-gutter-md row">
           <q-select
@@ -52,11 +51,21 @@
               </q-item>
             </template>
           </q-select>
+
+          <div class="q-ml-lg">
+            <q-toggle
+              v-model="queryToggle"
+              size="xl"
+              icon="visibility"
+              label="Query first 10000 Records"
+            />
+          </div>
         </div>
       </q-card-section>
     </q-card>
 
     <q-table
+      v-if="!queryToggle"
       class="my-sticky-header-table"
       dense
       auto-width
@@ -73,8 +82,7 @@
       style="height: 640px"
       :filter="filter"
     >
-
-    <template v-slot:top-right>
+      <template v-slot:top-right>
         <q-input
           borderless
           dense
@@ -89,7 +97,7 @@
         </q-input>
 
         <q-btn
-        class="q-ml-md"
+          class="q-ml-md"
           color="primary"
           icon-right="archive"
           label="Export to csv"
@@ -98,45 +106,79 @@
         />
       </template>
     </q-table>
+
+    <q-table
+      v-if="queryToggle"
+      :rows="queries"
+      row-key="index"
+      dense
+      auto-width
+      :grid="grid"
+      :loading="loading"
+      boarderd
+      :title="fileNameModel"
+      separator="cell"
+      style="height: 640px"
+      :filter="filter"
+     :rowsPerPage="30"
+      :rows-per-page-options="[0, 8, 18]"
+    >
+          <template v-slot:top-right>
+        <q-input
+          borderless
+          dense
+          debounce="300"
+          v-model="filter"
+          placeholder="Search"
+        >
+          <template v-slot:append>
+            <q-icon name="search" />
+            <q-toggle v-model="grid" label="Grid" />
+          </template>
+        </q-input>
+      </template>
+    </q-table>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref } from "vue";
 import { exportFile } from "quasar";
 
 export default {
-
-  
   data() {
     return {
+      queries: [],
+      queryToggle: false,
 
+      pagination: {
+        rowsPerPage: 0,
+      },
 
-      group: ref('WRK90MUL'),
+      group: ref("WRK90MUL"),
 
       optionsGroup: [
         {
-          label: 'WRK90MUL',
-          value: 'WRK90MUL'
+          label: "WRK90MUL",
+          value: "WRK90MUL",
         },
         {
-          label: 'PTFJEXP',
-          value: 'PTFJEXP'
+          label: "PTFJEXP",
+          value: "PTFJEXP",
         },
         {
-          label: 'WRKJEXP',
-          value: 'WRKJEXP'
+          label: "WRKJEXP",
+          value: "WRKJEXP",
         },
-              {
-          label: 'PTFSIAN',
-          value: 'PTFSIAN'
+        {
+          label: "PTFSIAN",
+          value: "PTFSIAN",
         },
-          {
-          label: 'WRKSIAN',
-          value: 'WRKSIAN'
-        }
+        {
+          label: "WRKSIAN",
+          value: "WRKSIAN",
+        },
       ],
-
 
       model: null,
       stringOptions: [],
@@ -202,14 +244,12 @@ export default {
     };
   },
   methods: {
-
-
-onGroupChange(){
-console.log(this.group)
-  this.model = this.group
-    this.loadFilenames();
-     this.fileNameModel = null;
-},
+    onGroupChange() {
+      console.log(this.group);
+      this.model = this.group;
+      this.loadFilenames();
+      this.fileNameModel = null;
+    },
 
     exportTable() {
       // naive encoding to csv format
@@ -261,6 +301,7 @@ console.log(this.group)
     onClickFilename(rr) {
       console.log("onClickFilename");
       this.loadFiles();
+      this.loadQueries();
     },
     filterFileNames(val, update) {
       if (val === "") {
@@ -310,6 +351,28 @@ console.log(this.group)
       }
     },
 
+    async loadQueries() {
+      this.loading = true;
+      try {
+        const data = {
+          lib: this.model,
+          fileName: this.fileNameModel.split("-->")[0].trim(),
+        };
+        //  console.log(data)
+        await this.$store.dispatch("queries/getQueriesAction", data);
+
+
+
+        this.queries = (this.$store.getters["queries/getQueriesGetter"]);
+
+
+        this.loading = false;
+      } catch (error) {
+        console.log(error);
+        this.loading = false;
+      }
+    },
+
     async loadFilenames() {
       try {
         const data = {
@@ -346,9 +409,8 @@ console.log(this.group)
   created() {
     //this.loadFiles();
     this.loadUsers();
-    this.model = this.group
-      this.loadFilenames();
-
+    this.model = this.group;
+    this.loadFilenames();
   },
 };
 </script>
