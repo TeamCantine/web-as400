@@ -2,7 +2,16 @@
   <div class="q-pa-md">
     <q-card class="q-my-md">
       <q-card-section class="q-py-lg q-px-lg">
-        <div class="text-h6 q-my-md">Cerca dettagli file</div>
+
+  <div class="q-pa-lg text-h6 ">
+    <q-option-group
+      v-model="group"
+      @update:model-value="onGroupChange"
+      :options="optionsGroup"
+      color="primary"
+      inline
+    />
+  </div>
 
         <div class="q-gutter-md row">
           <q-select
@@ -30,6 +39,7 @@
             use-input
             input-debounce="0"
             label="FILE"
+            autofocus
             clearable
             :options="fileNamesOptions"
             @filter="filterFileNames"
@@ -60,7 +70,7 @@
       separator="cell"
       :rowsPerPage="30"
       :rows-per-page-options="[0, 8, 18]"
-      style="height: 500px"
+      style="height: 640px"
       :filter="filter"
     >
 
@@ -92,10 +102,42 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import { exportFile } from "quasar";
+
 export default {
+
+  
   data() {
     return {
+
+
+      group: ref('WRK90MUL'),
+
+      optionsGroup: [
+        {
+          label: 'WRK90MUL',
+          value: 'WRK90MUL'
+        },
+        {
+          label: 'PTFJEXP',
+          value: 'PTFJEXP'
+        },
+        {
+          label: 'WRKJEXP',
+          value: 'WRKJEXP'
+        },
+              {
+          label: 'PTFSIAN',
+          value: 'PTFSIAN'
+        },
+          {
+          label: 'WRKSIAN',
+          value: 'WRKSIAN'
+        }
+      ],
+
+
       model: null,
       stringOptions: [],
       options: this.stringOptions,
@@ -160,6 +202,15 @@ export default {
     };
   },
   methods: {
+
+
+onGroupChange(){
+console.log(this.group)
+  this.model = this.group
+    this.loadFilenames();
+     this.fileNameModel = null;
+},
+
     exportTable() {
       // naive encoding to csv format
       const content = [this.columns.map((col) => this.wrapCsvValue(col.label))]
@@ -295,6 +346,9 @@ export default {
   created() {
     //this.loadFiles();
     this.loadUsers();
+    this.model = this.group
+      this.loadFilenames();
+
   },
 };
 </script>
