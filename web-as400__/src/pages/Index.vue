@@ -120,10 +120,10 @@
       separator="cell"
       style="height: 640px"
       :filter="filter"
-     :rowsPerPage="30"
+      :rowsPerPage="10000"
       :rows-per-page-options="[0, 8, 18]"
     >
-          <template v-slot:top-right>
+      <template v-slot:top-right>
         <q-input
           borderless
           dense
@@ -245,7 +245,6 @@ export default {
   },
   methods: {
     onGroupChange() {
-      console.log(this.group);
       this.model = this.group;
       this.loadFilenames();
       this.fileNameModel = null;
@@ -301,7 +300,6 @@ export default {
     onClickFilename(rr) {
       console.log("onClickFilename");
       this.loadFiles();
-      this.loadQueries();
     },
     filterFileNames(val, update) {
       if (val === "") {
@@ -344,6 +342,7 @@ export default {
         //  console.log(data)
         await this.$store.dispatch("files/getFilesAction", data);
         this.rows = this.$store.getters["files/getFilesGetter"];
+        this.loadQueries();
         this.loading = false;
       } catch (error) {
         console.log(error);
@@ -361,10 +360,7 @@ export default {
         //  console.log(data)
         await this.$store.dispatch("queries/getQueriesAction", data);
 
-
-
-        this.queries = (this.$store.getters["queries/getQueriesGetter"]);
-
+        this.queries = this.$store.getters["queries/getQueriesGetter"];
 
         this.loading = false;
       } catch (error) {
