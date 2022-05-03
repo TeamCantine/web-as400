@@ -3,8 +3,10 @@
 </template>
 <script>
 import { defineComponent } from 'vue';
+import { createPinia } from 'pinia'
 
 export default defineComponent({
-  name: 'App'
+  name: 'App',
+  createPinia
 })
 </script>

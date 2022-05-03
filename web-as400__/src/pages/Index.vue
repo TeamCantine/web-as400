@@ -334,6 +334,7 @@ export default {
 
     async loadFiles() {
       this.loading = true;
+      this.rows = []
       try {
         const data = {
           lib: this.model,
@@ -352,6 +353,7 @@ export default {
 
     async loadQueries() {
       this.loading = true;
+      this.queries = []
       try {
         const data = {
           lib: this.model,
@@ -375,6 +377,7 @@ export default {
           filename: this.model,
         };
         await this.$store.dispatch("filenames/getFilenamesAction", data);
+        this.filenamesArray = []
         this.$store.getters["filenames/getFilenamesGetter"].forEach(
           (element) => {
             this.filenamesArray.push(
