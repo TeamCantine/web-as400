@@ -49,8 +49,10 @@ export async function getQueriesAction(context, data) {
  
  export async function getFilesAction(context, data) {
 
-     const url1 = "http://10.100.0.30:3300/files/PRTFFLD/?library=WRK90MUL&tablename=gcpro00f"
-     let url = "http://10.100.0.30:3300/files/PRTFFLD/?library=" + data.lib + "&tablename=" + data.fileName
+     const url12 = "http://10.100.0.30:3300/files/PRTFFLD/?library=WRK90MUL&tablename=gcpro00f"
+     let url = "http://10.100.0.30:3300/files/PRTFFLD1/?library=" + data.lib + "&tablename=" + data.fileName
+     let url1 = "http://localhost:3300/files/PRTFFLD1/?library=" + data.lib + "&tablename=" + data.fileName
+
 
      const response = await fetch(url, {
          method: "GET",
@@ -88,6 +90,7 @@ export async function getQueriesAction(context, data) {
      const url_all = "http://10.100.0.30:3300/files/SCHEMA/?library=WRK"
 
      let url = "http://10.100.0.30:3300/files/SCHEMA/?library=" + data.user
+     let url1 = "http://localhost:3300/files/SCHEMA/?library=" + data.user
 
      const response = await fetch(url, {
          method: "GET",
@@ -122,6 +125,8 @@ export async function getQueriesAction(context, data) {
   console.log(data.filename)
 
   const url = "http://10.100.0.30:3300/files/FILENAMES/?library=" + data.filename
+
+  const url1 = "http://localhost:3300/files/FILENAMES/?library=" + data.filename
 
 
 

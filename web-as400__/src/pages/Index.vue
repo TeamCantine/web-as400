@@ -210,6 +210,27 @@ export default {
           sortable: true,
           align: "left",
         },
+
+
+        {
+          name: "KEY_COLUMN",
+          label: "CHIAVE",
+          field: "KEY_COLUMN",
+          sortable: true,
+          align: "left",
+        },
+
+
+      {
+          name: "KEY_ORDER",
+          label: "KEY_ORDER",
+          field: "KEY_ORDER",
+          sortable: true,
+          align: "left",
+        },
+
+
+
         {
           name: "DATA_TYPE",
           label: "TIPO",
