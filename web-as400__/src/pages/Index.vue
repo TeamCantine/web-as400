@@ -2,11 +2,11 @@
   <div class="q-pa-md">
     <q-card class="q-my-md">
       <q-card-section class="q-py-lg q-px-lg">
-        <div class="q-pa-lg text-h6">
+        <div class="q-pa-lg text-h6" v-if="pref.getUserPrefAsObj.length>0">
           <q-option-group
             v-model="group"
             @update:model-value="onGroupChange"
-            :options="optionsGroup"
+            :options="pref.getUserPrefAsObj"
             color="primary"
             inline
           />
@@ -36,6 +36,7 @@
             filled
             v-model="fileNameModel"
             use-input
+            :loading="loadingInputFiles"
             input-debounce="0"
             label="FILE"
             autofocus
@@ -139,21 +140,24 @@
       </template>
     </q-table>
 
-    <h1>{{as.getQueries}}</h1>
+  <!--  <h1>{{as.getQueries}}</h1> -->
   </div>
 </template>
 
 <script>
 import { ref } from "vue";
 import { exportFile } from "quasar";
+import { useQuasar } from "quasar";
 
 import { useStore } from '../stores/as';
-
+import {prefStore} from "../stores/pref"
 
 export default {
   data() {
     return {
-as: null,
+      q : useQuasar(),
+      as: null,
+      pref: null,
 
       queries: [],
       queryToggle: false,
@@ -162,31 +166,10 @@ as: null,
         rowsPerPage: 0,
       },
 
-      group: ref("WRK90MUL"),
+      group: ref(""),
 
-      optionsGroup: [
-        {
-          label: "WRK90MUL",
-          value: "WRK90MUL",
-        },
-        {
-          label: "PTFJEXP",
-          value: "PTFJEXP",
-        },
-        {
-          label: "WRKJEXP",
-          value: "WRKJEXP",
-        },
-        {
-          label: "PTFSIAN",
-          value: "PTFSIAN",
-        },
-        {
-          label: "WRKSIAN",
-          value: "WRKSIAN",
-        },
-      ],
 
+loadingInputFiles: false,
       model: null,
       stringOptions: [],
       options: this.stringOptions,
@@ -368,9 +351,12 @@ as: null,
           lib: this.model,
           fileName: this.fileNameModel.split("-->")[0].trim(),
         };
-        //  console.log(data)
+        
         await this.as.getFilesAction(data);
-        this.rows = this.as.getFilenames
+        this.rows = this.as.getFiles
+             console.log("loadfile_data")
+          console.log(this.as.getFiles)
+         
         this.loadQueries();
         this.loading = false;
       } catch (error) {
@@ -404,6 +390,7 @@ as: null,
         const data = {
           filename: this.model,
         };
+        this.loadingInputFiles = true
         await this.as.getFilenamesAction(data);
         this.filenamesArray = []
         this.as.getFilenames.forEach(
@@ -413,6 +400,7 @@ as: null,
             );
           }
         );
+          this.loadingInputFiles = false
       } catch (error) {
         console.log(error);
       }
@@ -423,11 +411,28 @@ as: null,
         const data = {
           user: "",
         };
+
+
+
+
+    await this.pref.setUserPref(this.q.localStorage.getItem("currentUser"))
+  
+
+      if(await this.pref.getUserPrefAsObj.length > 0){
+      this.group = this.pref.getUserPrefAsObj[0].value
+       this.model = this.group;
+      }
+
+
+   
         await this.as.getUsersAction( data);
 
-        this.as.getUsers.forEach((element) => {
+        await this.as.getUsers.forEach((element) => {
           this.stringOptions.push(element.TABLE_SCHEMA);
         });
+
+ this.loadFilenames();
+
       } catch (error) {
         console.log(error);
       }
@@ -436,9 +441,14 @@ as: null,
   created() {
     //this.loadFiles();
     this.as = useStore();
+    this.pref = prefStore()
+
+
+
+
     this.loadUsers();
-    this.model = this.group;
-    this.loadFilenames();
+
+
     //this.as.getQueriesAction({lib:"wrkjexp",fileName: "role_user"})
   },
 };

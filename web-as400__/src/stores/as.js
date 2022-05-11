@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { ref } from "vue";
 
 // useStore could be anything like useUser, useCart
 // the first argument is a unique id of the store across your application
@@ -7,9 +6,9 @@ export const useStore = defineStore('as', {
     state: () => {
         return {
 
-            group: ref("WRK90MUL"),
+        currentUser: '',
 
-
+       
             queries: [],
             files: [],
             users: [],
@@ -18,19 +17,30 @@ export const useStore = defineStore('as', {
         };
     },
     getters: {
+
+
+       getCurrentUser: state => state.currentUser,
+
+        //
+
         getQueries: state => state.queries,
         getFiles: state => state.files,
         getUsers: state => state.users,
         getFilenames: state => state.filenames
+
     },
     actions: {
+
+        setCurrentUser(user) {  console.log(user); this.currentUser = user},
+
+
         async getQueriesAction(data) {
 
             // "http://localhost:3300/files/?library=wrkjexp&tablename=role_user"
             let url = "http://10.100.0.30:3300/files/?library=" + data.lib + "&tablename=" + data.fileName
             let url1 = "http://localhost:3300/files/?library=" + data.lib + "&tablename=" + data.fileName
 
-            const response = await fetch(url1, {
+            const response = await fetch(url, {
                 method: "GET",
                 cache: "no-cache",
                 credentials: "same-origin",
@@ -62,7 +72,9 @@ export const useStore = defineStore('as', {
             let url1 = "http://localhost:3300/files/PRTFFLD1/?library=" + data.lib + "&tablename=" + data.fileName
 
 
-            const response = await fetch(url1, {
+       
+
+            const response = await fetch(url, {
                 method: "GET",
                 cache: "no-cache",
                 credentials: "same-origin",
@@ -88,14 +100,13 @@ export const useStore = defineStore('as', {
         },
         //Users/libdat
         async getUsersAction(data) {
-            console.log("Tomas")
 
             // "http://10.100.0.30:3300/files/SCHEMA/?library=WRK"
 
             let url = "http://10.100.0.30:3300/files/SCHEMA/?library=" + data.user
             let url1 = "http://localhost:3300/files/SCHEMA/?library=" + data.user
 
-            const response = await fetch(url1, {
+            const response = await fetch(url, {
                 method: "GET",
                 cache: "no-cache",
                 credentials: "same-origin",
@@ -122,15 +133,13 @@ export const useStore = defineStore('as', {
         //Filenames
         async getFilenamesAction(data) {
 
-            console.log(data)
-
             const url = "http://10.100.0.30:3300/files/FILENAMES/?library=" + data.filename
 
             const url1 = "http://localhost:3300/files/FILENAMES/?library=" + data.filename
 
 
 
-            const response = await fetch(url1, {
+            const response = await fetch(url, {
                 method: "GET",
                 cache: "no-cache",
                 credentials: "same-origin",

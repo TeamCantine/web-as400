@@ -119,6 +119,27 @@ router.get("/FILENAMES", (req, res, next) => {
 });
 
 
+//SELECT * FROM QSYS2.SYSTABLES WHERE TABLE_SCHEMA='WRKJEXP'
+//http://10.100.0.30:3300/files/USERPREF/?user=WRKJEXP
+router.get("/USERPREF", (req, res, next) => {
+    var q = req.query
+
+    console.log("GET: " + q.user.toUpperCase() + "\n")
+    pool
+        .query("SELECT * FROM WRKJEXP.DB_HELPER WHERE LIBDAT='" + q.user.toUpperCase().trim() + "'"  )
+        .then(result => {
+            res.status(200).json(result);
+        })
+        .catch(error => {
+            res.status(404)
+            console.log('error');
+            console.log(error);
+
+        });
+
+});
+
+
 
 
 module.exports = router;
