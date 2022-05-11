@@ -138,6 +138,8 @@
         </q-input>
       </template>
     </q-table>
+
+    <h1>{{as.getQueries}}</h1>
   </div>
 </template>
 
@@ -145,9 +147,14 @@
 import { ref } from "vue";
 import { exportFile } from "quasar";
 
+import { useStore } from '../stores/as';
+
+
 export default {
   data() {
     return {
+as: null,
+
       queries: [],
       queryToggle: false,
 
@@ -362,8 +369,8 @@ export default {
           fileName: this.fileNameModel.split("-->")[0].trim(),
         };
         //  console.log(data)
-        await this.$store.dispatch("files/getFilesAction", data);
-        this.rows = this.$store.getters["files/getFilesGetter"];
+        await this.as.getFilesAction(data);
+        this.rows = this.as.getFilenames
         this.loadQueries();
         this.loading = false;
       } catch (error) {
@@ -381,9 +388,9 @@ export default {
           fileName: this.fileNameModel.split("-->")[0].trim(),
         };
         //  console.log(data)
-        await this.$store.dispatch("queries/getQueriesAction", data);
+        await this.as.getQueriesAction( data);
 
-        this.queries = this.$store.getters["queries/getQueriesGetter"];
+        this.queries = this.as.getQueries;
 
         this.loading = false;
       } catch (error) {
@@ -397,9 +404,9 @@ export default {
         const data = {
           filename: this.model,
         };
-        await this.$store.dispatch("filenames/getFilenamesAction", data);
+        await this.as.getFilenamesAction(data);
         this.filenamesArray = []
-        this.$store.getters["filenames/getFilenamesGetter"].forEach(
+        this.as.getFilenames.forEach(
           (element) => {
             this.filenamesArray.push(
               element.TABLE_NAME + " --> " + element.TABLE_TEXT
@@ -416,9 +423,9 @@ export default {
         const data = {
           user: "",
         };
-        await this.$store.dispatch("users/getUsersAction", data);
+        await this.as.getUsersAction( data);
 
-        this.$store.getters["users/getUsersGetter"].forEach((element) => {
+        this.as.getUsers.forEach((element) => {
           this.stringOptions.push(element.TABLE_SCHEMA);
         });
       } catch (error) {
@@ -428,9 +435,11 @@ export default {
   },
   created() {
     //this.loadFiles();
+    this.as = useStore();
     this.loadUsers();
     this.model = this.group;
     this.loadFilenames();
+    //this.as.getQueriesAction({lib:"wrkjexp",fileName: "role_user"})
   },
 };
 </script>
