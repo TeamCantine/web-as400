@@ -2,7 +2,7 @@
   <div class="q-pa-md">
     <q-card class="q-my-md">
       <q-card-section class="q-py-lg q-px-lg">
-        <div class="q-pa-lg text-h6" v-if="pref.getUserPrefAsObj.length>0">
+        <div class="q-pa-lg text-h6" v-if="pref.getUserPrefAsObj.length > 0">
           <q-option-group
             v-model="group"
             @update:model-value="onGroupChange"
@@ -59,6 +59,31 @@
               size="xl"
               icon="visibility"
               label="Query first 10000 Records"
+            />
+          </div>
+
+          <div style="margin-left: 300px" inline class="flex flex-left">
+            <q-input
+              style="min-width: 230px"
+              square
+              color="primary"
+              label-color="primary"
+              outlined
+              clearable
+              v-model="fastWordSearch"
+              label="Fast Search"
+            >
+              <template v-slot:append>
+                <q-icon name="bolt" color="primary" />
+              </template>
+            </q-input>
+
+            <q-btn
+              inline
+              color="primary q-ml-sm"
+              label="Search"
+              icon-right="send"
+              @click="fastSearch"
             />
           </div>
         </div>
@@ -140,7 +165,7 @@
       </template>
     </q-table>
 
-  <!--  <h1>{{as.getQueries}}</h1> -->
+    <!--  <h1>{{as.getQueries}}</h1> -->
   </div>
 </template>
 
@@ -149,15 +174,17 @@ import { ref } from "vue";
 import { exportFile } from "quasar";
 import { useQuasar } from "quasar";
 
-import { useStore } from '../stores/as';
-import {prefStore} from "../stores/pref"
+import { useStore } from "../stores/as";
+import { prefStore } from "../stores/pref";
 
 export default {
   data() {
     return {
-      q : useQuasar(),
+      q: useQuasar(),
       as: null,
       pref: null,
+
+      fastWordSearch: "",
 
       queries: [],
       queryToggle: false,
@@ -168,8 +195,7 @@ export default {
 
       group: ref(""),
 
-
-loadingInputFiles: false,
+      loadingInputFiles: false,
       model: null,
       stringOptions: [],
       options: this.stringOptions,
@@ -200,8 +226,20 @@ loadingInputFiles: false,
           sortable: true,
           align: "left",
         },
-
-
+        {
+          name: "TABLE_SCHEMA",
+          label: "LIBRERIA",
+          field: "TABLE_SCHEMA",
+          sortable: true,
+          align: "left",
+        },
+        {
+          name: "TABLE_NAME",
+          label: "FILE",
+          field: "TABLE_NAME",
+          sortable: true,
+          align: "left",
+        },
         {
           name: "KEY_COLUMN",
           label: "CHIAVE",
@@ -210,16 +248,13 @@ loadingInputFiles: false,
           align: "left",
         },
 
-
-      {
+        {
           name: "KEY_ORDER",
           label: "KEY_ORDER",
           field: "KEY_ORDER",
           sortable: true,
           align: "left",
         },
-
-
 
         {
           name: "DATA_TYPE",
@@ -255,6 +290,10 @@ loadingInputFiles: false,
     };
   },
   methods: {
+    fastSearch() {
+      this.loadFastFiles();
+    },
+
     onGroupChange() {
       this.model = this.group;
       this.loadFilenames();
@@ -304,12 +343,10 @@ loadingInputFiles: false,
     },
 
     onClickLibdat(rr) {
-      console.log("onClickLibdat");
       this.loadFilenames();
       this.fileNameModel = null;
     },
     onClickFilename(rr) {
-      console.log("onClickFilename");
       this.loadFiles();
     },
     filterFileNames(val, update) {
@@ -344,44 +381,69 @@ loadingInputFiles: false,
     },
 
     async loadFiles() {
-      this.loading = true;
-      this.rows = []
-      try {
-        const data = {
-          lib: this.model,
-          fileName: this.fileNameModel.split("-->")[0].trim(),
-        };
-        
-        await this.as.getFilesAction(data);
-        this.rows = this.as.getFiles
-             console.log("loadfile_data")
-          console.log(this.as.getFiles)
-         
-        this.loadQueries();
-        this.loading = false;
-      } catch (error) {
-        console.log(error);
-        this.loading = false;
+      if (this.fileNameModel) {
+        this.loading = true;
+        this.rows = [];
+        try {
+          const data = {
+            lib: this.model,
+            fileName: this.fileNameModel.split("-->")[0].trim(),
+          };
+
+          await this.as.getFilesAction(data);
+          this.rows = this.as.getFiles;
+          //   this.loadQueries();
+          this.loading = false;
+        } catch (error) {
+          console.log(error);
+          this.loading = false;
+        }
+      }
+    },
+
+    async loadFastFiles() {
+      if (this.fastWordSearch !== "") {
+        this.loading = true;
+        this.rows = [];
+        try {
+          const data = {
+            user:
+              this.q.localStorage.getItem("currentUser") != null &&
+              this.q.localStorage.getItem("currentUser") != ""
+                ? this.q.localStorage.getItem("currentUser").trim()
+                : "",
+            search_word: this.fastWordSearch.trim(),
+          };
+
+          await this.as.getFastFilesAction(data);
+          this.rows = this.as.getFastFiles;
+          //   this.loadQueries();
+          this.loading = false;
+        } catch (error) {
+          console.log(error);
+          this.loading = false;
+        }
       }
     },
 
     async loadQueries() {
-      this.loading = true;
-      this.queries = []
-      try {
-        const data = {
-          lib: this.model,
-          fileName: this.fileNameModel.split("-->")[0].trim(),
-        };
-        //  console.log(data)
-        await this.as.getQueriesAction( data);
+      if (this.fileNameModel) {
+        this.loading = true;
+        this.queries = [];
+        try {
+          const data = {
+            lib: this.model,
+            fileName: this.fileNameModel.split("-->")[0].trim(),
+          };
+          await this.as.getQueriesAction(data);
 
-        this.queries = this.as.getQueries;
+          this.queries = this.as.getQueries;
 
-        this.loading = false;
-      } catch (error) {
-        console.log(error);
-        this.loading = false;
+          this.loading = false;
+        } catch (error) {
+          console.log(error);
+          this.loading = false;
+        }
       }
     },
 
@@ -390,17 +452,15 @@ loadingInputFiles: false,
         const data = {
           filename: this.model,
         };
-        this.loadingInputFiles = true
+        this.loadingInputFiles = true;
         await this.as.getFilenamesAction(data);
-        this.filenamesArray = []
-        this.as.getFilenames.forEach(
-          (element) => {
-            this.filenamesArray.push(
-              element.TABLE_NAME + " --> " + element.TABLE_TEXT
-            );
-          }
-        );
-          this.loadingInputFiles = false
+        this.filenamesArray = [];
+        this.as.getFilenames.forEach((element) => {
+          this.filenamesArray.push(
+            element.TABLE_NAME + " --> " + element.TABLE_TEXT
+          );
+        });
+        this.loadingInputFiles = false;
       } catch (error) {
         console.log(error);
       }
@@ -412,42 +472,51 @@ loadingInputFiles: false,
           user: "",
         };
 
+        await this.pref.setUserPref(this.q.localStorage.getItem("currentUser"));
 
+        if ((await this.pref.getUserPrefAsObj.length) > 0) {
+          this.group = this.pref.getUserPrefAsObj[0].value;
+          this.model = this.group;
+        }
 
-
-    await this.pref.setUserPref(this.q.localStorage.getItem("currentUser"))
-  
-
-      if(await this.pref.getUserPrefAsObj.length > 0){
-      this.group = this.pref.getUserPrefAsObj[0].value
-       this.model = this.group;
-      }
-
-
-   
-        await this.as.getUsersAction( data);
+        await this.as.getUsersAction(data);
 
         await this.as.getUsers.forEach((element) => {
           this.stringOptions.push(element.TABLE_SCHEMA);
         });
 
- this.loadFilenames();
-
+        this.loadFilenames();
       } catch (error) {
         console.log(error);
       }
     },
   },
+
+  // Watcher
+  watch: {
+    // whenever question changes, this function will run
+    queryToggle(newQuestion, oldQuestion) {
+      if (newQuestion) {
+        this.loadQueries();
+      }
+    },
+    fileNameModel(newQuestion, oldQuestion) {
+      if (
+        newQuestion !== "" &&
+        this.fileNameModel != null &&
+        this.queryToggle
+      ) {
+        this.loadQueries();
+      }
+    },
+  },
+
   created() {
     //this.loadFiles();
     this.as = useStore();
-    this.pref = prefStore()
-
-
-
+    this.pref = prefStore();
 
     this.loadUsers();
-
 
     //this.as.getQueriesAction({lib:"wrkjexp",fileName: "role_user"})
   },

@@ -7,139 +7,193 @@ const pool = require("./connection");
  */
 // http://localhost:3300/files/?library=wrkjexp&tablename=role_user
 router.get("/", (req, res, next) => {
-    console.log("GET: " + req.query.library + "\n")
-    console.log("GET: " + req.query.tablemane + "\n")
+    console.log("GET: " + req.query.library + "\n");
+    console.log("GET: " + req.query.tablemane + "\n");
     pool
-        .query('SELECT * FROM ' + req.query.library.toUpperCase().trim() + "." + req.query.tablename.toUpperCase().trim() +" LIMIT 10000")
-        .then(result => {
+        .query(
+            "SELECT * FROM " +
+            req.query.library.toUpperCase().trim() +
+            "." +
+            req.query.tablename.toUpperCase().trim() +
+            " LIMIT 10000"
+        )
+        .then((result) => {
             res.status(200).json(result);
         })
-        .catch(error => {
-            console.log('error');
+        .catch((error) => {
+            console.log("error");
             console.log(error);
-
         });
-
 });
-
 
 // SELECT * FROM QSYS2.SYSCOLUMNS WHERE  TABLE_SCHEMA = 'WRK90MUL' AND TABLE_NAME = 'GCMOV00F'
 // http://localhost:3000/files/PRTFFLD/?library=WRK90MUL&tablename=gcpro00f
 router.get("/PRTFFLD", (req, res, next) => {
-    var q = req.query
+    var q = req.query;
 
-
-    console.log("GET: " + q.library.toUpperCase() + "\n")
-    console.log("GET: " + q.tablename.toUpperCase() + "\n")
+    console.log("GET: " + q.library.toUpperCase() + "\n");
+    console.log("GET: " + q.tablename.toUpperCase() + "\n");
     pool
-        .query('SELECT COLUMN_NAME, COLUMN_TEXT , DATA_TYPE, LENGTH,NUMERIC_SCALE, CHARACTER_MAXIMUM_LENGTH, COLUMN_DEFAULT FROM QSYS2.SYSCOLUMNS WHERE  TABLE_SCHEMA = ? AND TABLE_NAME = ?', 
-        [q.library.toUpperCase(),q.tablename.toUpperCase()])
-        .then(result => {
+        .query(
+            "SELECT COLUMN_NAME, COLUMN_TEXT , DATA_TYPE, LENGTH,NUMERIC_SCALE, CHARACTER_MAXIMUM_LENGTH, COLUMN_DEFAULT FROM QSYS2.SYSCOLUMNS WHERE  TABLE_SCHEMA = ? AND TABLE_NAME = ?", [q.library.toUpperCase(), q.tablename.toUpperCase()]
+        )
+        .then((result) => {
             res.status(200).json(result);
         })
-        .catch(error => {
-            res.status(404)
-            console.log('error');
+        .catch((error) => {
+            res.status(404);
+            console.log("error");
             console.log(error);
-
         });
-
 });
-
-
 
 // SELECT * FROM QSYS2.SYSCOLUMNS WHERE  TABLE_SCHEMA = 'WRK90MUL' AND TABLE_NAME = 'GCMOV00F'
-// http://localhost:3000/files/PRTFFLD/?library=WRK90MUL&tablename=gcpro00f
+// http://localhost:3300/files/PRTFFLD1/?library=WRK90MUL&tablename=gcpro00f
 router.get("/PRTFFLD1", (req, res, next) => {
-    var q = req.query
+    var q = req.query;
 
-
-    console.log("GET: " + q.library.toUpperCase() + "\n")
-    console.log("GET: " + q.tablename.toUpperCase() + "\n")
+    console.log("GET: " + q.library.toUpperCase() + "\n");
+    console.log("GET: " + q.tablename.toUpperCase() + "\n");
     pool
-        .query('SELECT	c.ordinal_position,	c.column_name,	k.ordinal_position AS key_column,	k.asc_or_desc AS key_order,	c.data_type,	c.length,	c.numeric_scale,	c.is_nullable,	c.column_text,	c.COLUMN_DEFAULT FROM	qsys2.syscolumns c JOIN qsys2.systables t ON	c.table_schema = t.table_schema	AND c.table_name = t.table_name LEFT OUTER JOIN sysibm.sqlstatistics k ON	c.table_schema = k.table_schem	AND c.table_name = k.table_name	AND c.table_name = k.index_name	AND c.column_name = k.column_name WHERE	c.table_schema = ?	AND c.table_name = ? ORDER BY ORDINAL_POSITION', 
-        [q.library.toUpperCase(),q.tablename.toUpperCase()])
-        .then(result => {
+        .query(
+            "SELECT	c.ordinal_position,	c.column_name, c.table_schema,	c.table_name,	k.ordinal_position AS key_column,	k.asc_or_desc AS key_order,	c.data_type,	c.length,	c.numeric_scale,	c.is_nullable,	c.column_text,	c.COLUMN_DEFAULT FROM	qsys2.syscolumns c JOIN qsys2.systables t ON	c.table_schema = t.table_schema	AND c.table_name = t.table_name LEFT OUTER JOIN sysibm.sqlstatistics k ON	c.table_schema = k.table_schem	AND c.table_name = k.table_name	AND c.table_name = k.index_name	AND c.column_name = k.column_name WHERE	c.table_schema = ?	AND c.table_name = ? ORDER BY ORDINAL_POSITION", [q.library.toUpperCase(), q.tablename.toUpperCase()]
+        )
+        .then((result) => {
             res.status(200).json(result);
         })
-        .catch(error => {
-            res.status(404)
-            console.log('error');
+        .catch((error) => {
+            res.status(404);
+            console.log("error");
             console.log(error);
-
         });
-
 });
 
+// SELECT * FROM QSYS2.SYSCOLUMNS WHERE  TABLE_SCHEMA = 'WRK90MUL' AND TABLE_NAME = 'GCMOV00F'
+// http://localhost:3300/files/PRTFFLD_SMART/?search_word=CDCNCN&user=WRKTOMMAL
+router.get("/PRTFFLD_SMART", (req, res, next) => {
+    var q = req.query;
 
+    var all = q.all === 'all' ? true : false
 
+    console.log("GET: " + q.search_word.toUpperCase() + "\n");
 
+    pool
+        .query("SELECT * FROM WRKJEXP.DB_HELPER WHERE LIBDAT = ? ", [
+            q.user.toUpperCase(),
+        ])
+        .then((result) => {
 
+            var str = ""
 
+            if (result.length > 0)
+                str =
+                " c.table_schema in ('" +
+                result[0].PREFL1.trim() +
+                "', '" +
+                result[0].PREFL2.trim() +
+                "', '" +
+                result[0].PREFL3.trim() +
+                "','" +
+                result[0].PREFL4.trim() +
+                "', '" +
+                result[0].PREFL5.trim() +
+                "') AND ";
+
+            pool
+                .query(
+                    "SELECT	c.ordinal_position,	c.column_name,	k.ordinal_position AS key_column,	k.asc_or_desc AS key_order,	c.data_type,	c.length,	c.numeric_scale,	c.is_nullable,	c.column_text,	c.COLUMN_DEFAULT,	c.table_schema,	c.table_name FROM	qsys2.syscolumns c JOIN qsys2.systables t ON c.table_schema = t.table_schema AND c.table_name = t.table_name LEFT OUTER JOIN sysibm.sqlstatistics k ON	c.table_schema = k.table_schem	AND c.table_name = k.table_name	AND c.table_name = k.index_name	AND c.column_name = k.column_name WHERE  " +
+                    ((result.length > 0) ?
+                        str :
+                        "") +
+                    "(c.column_name LIKE '%" +
+                    q.search_word.toUpperCase() +
+                    "%' OR 	UPPER(c.column_text) LIKE '%" +
+                    q.search_word.toUpperCase() +
+                    "%') ORDER BY	c.table_schema,	c.table_name, ORDINAL_POSITION ", []
+                )
+                .then((result) => {
+                    res.status(200).json(result);
+                })
+                .catch((error) => {
+                    res.status(404);
+                    console.log("error");
+                    console.log(error);
+                });
+
+            //  res.status(200).json(result);
+        })
+        .catch((error) => {
+            res.status(404);
+            console.log("error");
+            console.log(error);
+        });
+});
 
 //SELECT DISTINCT(TABLE_SCHEMA) FROM QSYS2.SYSTABLES WHERE TABLE_SCHEMA LIKE '%%'
 //http://localhost:3000/files/SCHEMA/?library=WRK
 router.get("/SCHEMA", (req, res, next) => {
-    var q = req.query
+    var q = req.query;
 
-    console.log("GET: " + q.library.toUpperCase() + "\n")
+    console.log("GET: " + q.library.toUpperCase() + "\n");
+
     pool
-        .query("SELECT DISTINCT(TABLE_SCHEMA) FROM QSYS2.SYSTABLES WHERE TABLE_SCHEMA LIKE '%" + q.library.toUpperCase() + "%'"  )
-        .then(result => {
+        .query(
+            "SELECT DISTINCT(TABLE_SCHEMA) FROM QSYS2.SYSTABLES WHERE TABLE_SCHEMA LIKE '%" +
+            q.library.toUpperCase() +
+            "%'"
+        )
+        .then((result) => {
             res.status(200).json(result);
         })
-        .catch(error => {
-            res.status(404)
-            console.log('error');
+        .catch((error) => {
+            res.status(404);
+            console.log("error");
             console.log(error);
-
         });
-
 });
-
 
 //SELECT * FROM QSYS2.SYSTABLES WHERE TABLE_SCHEMA='WRKJEXP'
 //http://10.100.0.30:3300/files/FILENAMES/?library=WRKJEXP
 router.get("/FILENAMES", (req, res, next) => {
-    var q = req.query
+    var q = req.query;
 
-    console.log("GET: " + q.library.toUpperCase() + "\n")
+    console.log("GET: " + q.library.toUpperCase() + "\n");
     pool
-        .query("SELECT * FROM QSYS2.SYSTABLES WHERE TABLE_SCHEMA='" + q.library.toUpperCase().trim() + "'"  )
-        .then(result => {
+        .query(
+            "SELECT * FROM QSYS2.SYSTABLES WHERE TABLE_SCHEMA='" +
+            q.library.toUpperCase().trim() +
+            "'"
+        )
+        .then((result) => {
             res.status(200).json(result);
         })
-        .catch(error => {
-            res.status(404)
-            console.log('error');
+        .catch((error) => {
+            res.status(404);
+            console.log("error");
             console.log(error);
-
         });
-
 });
-
 
 //SELECT * FROM QSYS2.SYSTABLES WHERE TABLE_SCHEMA='WRKJEXP'
 //http://10.100.0.30:3300/files/USERPREF/?user=WRKJEXP
 router.get("/USERPREF", (req, res, next) => {
-    var q = req.query
+    var q = req.query;
 
-    console.log("GET: " + q.user.toUpperCase() + "\n")
+    console.log("GET: " + q.user.toUpperCase() + "\n");
     pool
-        .query("SELECT * FROM WRKJEXP.DB_HELPER WHERE LIBDAT='" + q.user.toUpperCase().trim() + "'"  )
-        .then(result => {
+        .query(
+            "SELECT * FROM WRKJEXP.DB_HELPER WHERE LIBDAT='" +
+            q.user.toUpperCase().trim() +
+            "'"
+        )
+        .then((result) => {
             res.status(200).json(result);
         })
-        .catch(error => {
-            res.status(404)
-            console.log('error');
+        .catch((error) => {
+            res.status(404);
+            console.log("error");
             console.log(error);
-
         });
-
 });
-
-
-
 
 module.exports = router;

@@ -13,40 +13,34 @@
 
         <q-toolbar-title> AS-DB-helper </q-toolbar-title>
 
-   
-     
-          <q-select
-            style="max-width: 250px"
-            class="q-mr-xl"
-            
-            v-model="model"
-            use-input
-            input-debounce="0"
-            label="PROFILO"
-            label-color="white"
-            :options="options"
-            @filter="filterFn"
-            @update:model-value="onClickLibdat"
-            behavior="menu"
-          >
-            <template v-slot:no-option>
-              <q-item>
-                <q-item-section class="text-grey">No results</q-item-section>
-              </q-item>
-            </template>
+        <q-select
+          style="max-width: 250px"
+          class="q-mr-xl"
+          v-model="model"
+          use-input
+          input-debounce="0"
+          label="PROFILO"
+          label-color="white"
+          :options="options"
+          @filter="filterFn"
+          @update:model-value="onClickLibdat"
+          behavior="menu"
+        >
+          <template v-slot:no-option>
+            <q-item>
+              <q-item-section class="text-grey">No results</q-item-section>
+            </q-item>
+          </template>
 
-            <template v-slot:append>
-              <q-icon name="lock" color="white" />
-            </template>
-          </q-select>
+          <template v-slot:append>
+            <q-icon name="lock" color="white" />
+          </template>
+        </q-select>
 
-
-     <div class="q-ml-md">
+        <div class="q-ml-md">
           Dark mode
           <q-toggle color="red" v-model="dark" @click="q.dark.toggle()" />
         </div>
-
-
       </q-toolbar>
     </q-header>
 
@@ -92,13 +86,16 @@ const linksList = [
     icon: "school",
     to: "/prove",
   },
+
 ];
 
 import { defineComponent, ref } from "vue";
 import { useStore } from "../stores/as";
-import {prefStore} from "../stores/pref"
+import { prefStore } from "../stores/pref";
 
 import { useQuasar } from "quasar";
+
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: "MainLayout",
@@ -109,6 +106,7 @@ export default defineComponent({
 
   setup() {
     const q = useQuasar();
+    const router = useRouter()
 
     const leftDrawerOpen = ref(false);
     const dark = ref(false);
@@ -117,7 +115,7 @@ export default defineComponent({
     const stringOptions = ref([]);
     const options = ref([]);
     const as = useStore();
-    const pref = prefStore()
+    const pref = prefStore();
 
     const filterFn = (val, update) => {
       if (val === "") {
@@ -136,24 +134,37 @@ export default defineComponent({
     };
 
     const onClickLibdat = (rr) => {
-      console.log("onClickLibdat helper");
-      console.log(model.value);
       //  this.loadFilenames();
       as.setCurrentUser(model.value);
       q.localStorage.set("currentUser", model.value);
-      pref.setUserPref(model.value)
-      
+      pref.setUserPref(model.value);
+     // q.$router.push({name: 'myPath'})
+
+      //q.$router.push({name: '/home'})
+      //router.push('/home')
+      if(q.localStorage.getItem("currentUser") != 'null')
+      location.reload();
+      else q.localStorage.remove("currentUser")
+
     };
 
-    const loadUserPrefs = ()=> {
-            if (q.localStorage.getItem("currentUser") !== "")
+    const loadUserPrefs = () => {
+      if (q.localStorage.getItem("currentUser") !== "" &&  q.localStorage.getItem("currentUser") !== 'null' && q.localStorage.getItem("currentUser") !== null){
         model.value = q.localStorage.getItem("currentUser");
 
-       pref.setUserPref(model.value)
-    }
+        linksList.push(  {
+    title: "Preferenze",
+    caption: "pref",
+    icon: "settings ",
+    to: "/preference"
+  },)
+
+      }
+
+      pref.setUserPref(model.value);
+    };
 
     const loadUsers = async () => {
-
       try {
         const data = {
           user: "",
@@ -163,9 +174,7 @@ export default defineComponent({
         as.getUsers.forEach((element) => {
           stringOptions.value.push(element.TABLE_SCHEMA);
         });
-
-      } catch 
-      (error) {
+      } catch (error) {
         console.log(error);
       }
     };
@@ -191,13 +200,10 @@ export default defineComponent({
   },
 
   mounted() {
-    this.loadUserPrefs()
+    this.loadUserPrefs();
     this.loadUsers();
-    console.log(this.count); // 0
   },
 });
 </script>
 
-
-<style scoped>
-</style>
+<style scoped></style>
