@@ -113,12 +113,14 @@ export const useStore = defineStore("as", {
                 "http://10.100.0.30:3300/files/PRTFFLD_SMART/?search_word=" +
                 data.search_word +
                 "&user=" +
-                data.user;
+                data.user +
+                "&all=" + data.all
             let url1 =
                 "http://localhost:3300/files/PRTFFLD_SMART/?search_word=" +
                 data.search_word +
                 "&user=" +
-                data.user;
+                data.user +
+                "&all=" + data.all
 
             const response = await fetch(url, {
                 method: "GET",

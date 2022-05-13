@@ -77,6 +77,21 @@ router.get("/PRTFFLD_SMART", (req, res, next) => {
 
     console.log("GET: " + q.search_word.toUpperCase() + "\n");
 
+    var wordArr = q.search_word.toUpperCase().trim().split(" ")
+
+
+    var completeWord = ""
+
+    wordArr.forEach(element => {
+        completeWord += ("%" + element.trim())
+    });
+
+    completeWord += "%"
+
+
+
+    console.log(completeWord)
+
     pool
         .query("SELECT * FROM WRKJEXP.DB_HELPER WHERE LIBDAT = ? ", [
             q.user.toUpperCase(),
@@ -99,17 +114,32 @@ router.get("/PRTFFLD_SMART", (req, res, next) => {
                 result[0].PREFL5.trim() +
                 "') AND ";
 
+
+            final_sql = "SELECT	c.ordinal_position,	c.column_name,	k.ordinal_position AS key_column,	k.asc_or_desc AS key_order,	c.data_type,	c.length,	c.numeric_scale,	c.is_nullable,	c.column_text,	c.COLUMN_DEFAULT,	c.table_schema,	c.table_name FROM	qsys2.syscolumns c JOIN qsys2.systables t ON c.table_schema = t.table_schema AND c.table_name = t.table_name LEFT OUTER JOIN sysibm.sqlstatistics k ON	c.table_schema = k.table_schem	AND c.table_name = k.table_name	AND c.table_name = k.index_name	AND c.column_name = k.column_name WHERE  " +
+                (!all && (result.length > 0) ?
+                    str :
+                    "") +
+                "(c.column_name LIKE '" +
+                completeWord +
+                "' OR 	UPPER(c.column_text) LIKE '" +
+                completeWord +
+                "') ORDER BY	c.table_schema,	c.table_name, ORDINAL_POSITION "
+
+            console.log("final sql")
+            console.log(final_sql)
+
+
             pool
                 .query(
                     "SELECT	c.ordinal_position,	c.column_name,	k.ordinal_position AS key_column,	k.asc_or_desc AS key_order,	c.data_type,	c.length,	c.numeric_scale,	c.is_nullable,	c.column_text,	c.COLUMN_DEFAULT,	c.table_schema,	c.table_name FROM	qsys2.syscolumns c JOIN qsys2.systables t ON c.table_schema = t.table_schema AND c.table_name = t.table_name LEFT OUTER JOIN sysibm.sqlstatistics k ON	c.table_schema = k.table_schem	AND c.table_name = k.table_name	AND c.table_name = k.index_name	AND c.column_name = k.column_name WHERE  " +
-                    ((result.length > 0) ?
+                    (!all && (result.length > 0) ?
                         str :
                         "") +
-                    "(c.column_name LIKE '%" +
-                    q.search_word.toUpperCase() +
-                    "%' OR 	UPPER(c.column_text) LIKE '%" +
-                    q.search_word.toUpperCase() +
-                    "%') ORDER BY	c.table_schema,	c.table_name, ORDINAL_POSITION ", []
+                    "(c.column_name LIKE '" +
+                    completeWord +
+                    "' OR 	UPPER(c.column_text) LIKE '" +
+                    completeWord +
+                    "') ORDER BY	c.table_schema,	c.table_name, ORDINAL_POSITION ", []
                 )
                 .then((result) => {
                     res.status(200).json(result);

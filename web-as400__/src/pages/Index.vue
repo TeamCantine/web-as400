@@ -62,9 +62,14 @@
             />
           </div>
 
-          <div style="margin-left: 300px" inline class="flex flex-left">
+          <div style="margin-left: 350px" inline class="flex flex-left">
+
+
+
+
+
             <q-input
-              style="min-width: 230px"
+              style="min-width: 300px"
               square
               color="primary"
               label-color="primary"
@@ -79,12 +84,15 @@
             </q-input>
 
             <q-btn
+            :loading="loading"
               inline
               color="primary q-ml-sm"
               label="Search"
               icon-right="send"
               @click="fastSearch"
+              :disable="fastWordSearch == null || fastWordSearch == '' || fastWordSearch.length < 3"
             />
+            <q-checkbox class="q-ml-xl" size="lg" left-label v-model="deep" label="Ricerca profonda" />
           </div>
         </div>
       </q-card-section>
@@ -185,6 +193,7 @@ export default {
       pref: null,
 
       fastWordSearch: "",
+      deep: false,
 
       queries: [],
       queryToggle: false,
@@ -413,6 +422,7 @@ export default {
                 ? this.q.localStorage.getItem("currentUser").trim()
                 : "",
             search_word: this.fastWordSearch.trim(),
+            all: (this.deep) ? 'all' : 'no'
           };
 
           await this.as.getFastFilesAction(data);
@@ -507,6 +517,11 @@ export default {
         this.queryToggle
       ) {
         this.loadQueries();
+      }
+    },
+    fastWordSearch(newQuestion, oldQuestion) {
+      if (newQuestion ) {
+
       }
     },
   },
