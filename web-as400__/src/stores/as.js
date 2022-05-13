@@ -120,8 +120,6 @@ export const useStore = defineStore("as", {
                 "&user=" +
                 data.user;
 
-            console.log(url1)
-
             const response = await fetch(url, {
                 method: "GET",
                 cache: "no-cache",
