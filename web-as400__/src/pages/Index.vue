@@ -14,6 +14,8 @@
 
         <div class="q-gutter-md row">
           <q-select
+   
+
             filled
             v-model="model"
             use-input
@@ -62,14 +64,14 @@
             />
           </div>
 
-          <div style="margin-left: 350px" inline class="flex flex-left">
+          <div style="margin-left: 130px" inline class="flex flex-left">
 
 
 
 
 
             <q-input
-              style="min-width: 300px"
+              style="min-width: 200px"
               square
               color="primary"
               label-color="primary"

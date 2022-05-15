@@ -102,17 +102,17 @@ router.get("/PRTFFLD_SMART", (req, res, next) => {
 
             if (result.length > 0)
                 str =
-                " c.table_schema in ('" +
-                result[0].PREFL1.trim() +
-                "', '" +
-                result[0].PREFL2.trim() +
-                "', '" +
-                result[0].PREFL3.trim() +
-                "','" +
-                result[0].PREFL4.trim() +
-                "', '" +
-                result[0].PREFL5.trim() +
-                "') AND ";
+                    " c.table_schema in ('" +
+                    result[0].PREFL1.trim() +
+                    "', '" +
+                    result[0].PREFL2.trim() +
+                    "', '" +
+                    result[0].PREFL3.trim() +
+                    "','" +
+                    result[0].PREFL4.trim() +
+                    "', '" +
+                    result[0].PREFL5.trim() +
+                    "') AND ";
 
 
             final_sql = "SELECT	c.ordinal_position,	c.column_name,	k.ordinal_position AS key_column,	k.asc_or_desc AS key_order,	c.data_type,	c.length,	c.numeric_scale,	c.is_nullable,	c.column_text,	c.COLUMN_DEFAULT,	c.table_schema,	c.table_name FROM	qsys2.syscolumns c JOIN qsys2.systables t ON c.table_schema = t.table_schema AND c.table_name = t.table_name LEFT OUTER JOIN sysibm.sqlstatistics k ON	c.table_schema = k.table_schem	AND c.table_name = k.table_name	AND c.table_name = k.index_name	AND c.column_name = k.column_name WHERE  " +
@@ -181,6 +181,56 @@ router.get("/SCHEMA", (req, res, next) => {
             console.log(error);
         });
 });
+
+
+
+
+//SELECT DISTINCT(TABLE_SCHEMA) FROM QSYS2.SYSTABLES WHERE TABLE_SCHEMA LIKE '%%'
+//http://localhost:3000/files/SCHEMA/?library=WRK
+router.get("/inserOrUpdatePref", (req, res, next) => {
+    var q = req.query;
+
+    pool
+        .query(
+            "SELECT * FROM wrkjexp.DB_HELPER WHERE LIBDAT = '" +
+            q.libdat.toUpperCase() +
+            "'"
+        )
+        .then((result) => {
+            var sql = "INSERT INTO wrkjexp.DB_HELPER VALUES('" +  q.libdat.toUpperCase() + "','"+ q.PREFL1.toUpperCase() + "', '"  + q.PREFL2.toUpperCase()  + 
+             "', '" + q.PREFL3.toUpperCase() + "', '" + q.PREFL4.toUpperCase() + "', '" + q.PREFL5.toUpperCase() + "') "
+
+            if (result.length > 0) {
+                 sql = "UPDATE wrkjexp.DB_HELPER SET PREFL1 = '" + q.PREFL1.toUpperCase() + "', PREFL2 = '"  + q.PREFL2.toUpperCase()  + 
+             "', PREFL3 = '" + q.PREFL3.toUpperCase() + "', PREFL4 = '" + q.PREFL4.toUpperCase() + "', PREFL5 = '" + q.PREFL5.toUpperCase() + "' WHERE LIBDAT = '" +
+                q.libdat.toUpperCase() +
+                "'"
+            }
+
+            pool
+                .update(
+                    sql,[]
+                )
+                .then((result) => {
+                    res.status(200).json(result);
+                })
+                .catch((error) => {
+                    res.status(404);
+                    console.log("error");
+                    console.log(error);
+                });
+
+        })
+        .catch((error) => {
+            res.status(404);
+            console.log("error");
+            console.log(error);
+        });
+});
+
+
+
+
 
 //SELECT * FROM QSYS2.SYSTABLES WHERE TABLE_SCHEMA='WRKJEXP'
 //http://10.100.0.30:3300/files/FILENAMES/?library=WRKJEXP
