@@ -13,6 +13,9 @@ const routes = [{
                 path: "query",
                 component: () =>
                     import ("pages/Query.vue"),
+                meta: {
+                    isAuth: LocalStorage.getItem("currentUser")
+                }
             },
             {
                 path: "home",

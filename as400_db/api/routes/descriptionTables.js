@@ -20,7 +20,7 @@ router.get("/all", (req, res, next) => {
             req.query.library.toUpperCase().trim() +
             "." +
             req.query.tablename.toUpperCase().trim() +
-            " LIMIT 10000"
+            " LIMIT 500"
         )
         .then((result) => {
             res.status(200).json(result);

@@ -80,13 +80,6 @@ const linksList = [
     to: "/query",
   },
   */
-  {
-    title: "Query",
-    caption: "Le mie query",
-    icon: "search",
-    to: "/query",
-  },
-
 ];
 
 import { defineComponent, ref } from "vue";
@@ -95,7 +88,7 @@ import { prefStore } from "../stores/pref";
 
 import { useQuasar } from "quasar";
 
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "MainLayout",
@@ -106,7 +99,7 @@ export default defineComponent({
 
   setup() {
     const q = useQuasar();
-    const router = useRouter()
+    const router = useRouter();
 
     const leftDrawerOpen = ref(false);
     const dark = ref(false);
@@ -138,27 +131,35 @@ export default defineComponent({
       as.setCurrentUser(model.value);
       q.localStorage.set("currentUser", model.value);
       pref.setUserPref(model.value);
-     // q.$router.push({name: 'myPath'})
+      // q.$router.push({name: 'myPath'})
 
       //q.$router.push({name: '/home'})
       //router.push('/home')
-      if(q.localStorage.getItem("currentUser") != 'null')
-      location.reload();
-      else q.localStorage.remove("currentUser")
-
+      if (q.localStorage.getItem("currentUser") != "null") location.reload();
+      else q.localStorage.remove("currentUser");
     };
 
     const loadUserPrefs = () => {
-      if (q.localStorage.getItem("currentUser") !== "" &&  q.localStorage.getItem("currentUser") !== 'null' && q.localStorage.getItem("currentUser") !== null){
+      if (
+        q.localStorage.getItem("currentUser") !== "" &&
+        q.localStorage.getItem("currentUser") !== "null" &&
+        q.localStorage.getItem("currentUser") !== null
+      ) {
         model.value = q.localStorage.getItem("currentUser");
 
-        linksList.push(  {
-    title: "Preferenze",
-    caption: "pref",
-    icon: "settings ",
-    to: "/preference"
-  },)
+        linksList.push({
+          title: "Preferenze",
+          caption: "pref",
+          icon: "settings ",
+          to: "/preference",
+        });
 
+        linksList.push({
+          title: "Query",
+          caption: "Le mie query",
+          icon: "search",
+          to: "/query",
+        });
       }
 
       pref.setUserPref(model.value);
