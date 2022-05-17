@@ -210,6 +210,17 @@ if(model1.value == null && model2.value == null && model3.value == null && model
     prefl5: model5.value,
   });
 
+
+    q.notify({
+              color: "primary",
+              textColor: "white",
+              icon: "save",
+              message: "Preferenza salvata con successo",
+              actions: [
+            { label: 'Dismiss', color: 'white', handler: () => {} }
+          ]
+            });
+
   setPrefs()
 };
 

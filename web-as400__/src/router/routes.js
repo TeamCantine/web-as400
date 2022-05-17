@@ -10,19 +10,14 @@ const routes = [{
                     import ("pages/Index.vue"),
             },
             {
-                path: "prove",
+                path: "query",
                 component: () =>
-                    import ("pages/prove.vue"),
+                    import ("pages/Query.vue"),
             },
             {
                 path: "home",
                 component: () =>
                     import ("pages/Index.vue"),
-            },
-            {
-                path: "query",
-                component: () =>
-                    import ("pages/Query.vue"),
             },
             {
                 path: "preference",

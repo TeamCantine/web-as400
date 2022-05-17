@@ -11,7 +11,7 @@
           @click="toggleLeftDrawer"
         />
 
-        <q-toolbar-title> AS-DB-helper </q-toolbar-title>
+        <q-toolbar-title> Powered by Team Cantine </q-toolbar-title>
 
         <q-select
           style="max-width: 250px"
@@ -81,10 +81,10 @@ const linksList = [
   },
   */
   {
-    title: "Test",
-    caption: "only for test",
-    icon: "school",
-    to: "/prove",
+    title: "Query",
+    caption: "Le mie query",
+    icon: "search",
+    to: "/query",
   },
 
 ];

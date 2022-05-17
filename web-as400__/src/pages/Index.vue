@@ -14,7 +14,7 @@
 
         <div class="q-gutter-md row">
           <q-select
-   
+
 
             filled
             v-model="model"
@@ -39,6 +39,7 @@
             v-model="fileNameModel"
             use-input
             :loading="loadingInputFiles"
+            :disable="loadingInputFiles"
             input-debounce="0"
             label="FILE"
             autofocus
@@ -102,9 +103,10 @@
 
     <q-table
       v-if="!queryToggle"
-      class="my-sticky-header-table"
       dense
       auto-width
+      class="text-subtitle2 my-sticky-header-table "
+      table-header-class="text-white"
       :grid="grid"
       :rows="rows"
       :columns="columns"
@@ -124,17 +126,18 @@
           dense
           debounce="300"
           v-model="filter"
-          placeholder="Search"
+          placeholder="Search word"
         >
           <template v-slot:append>
-            <q-icon name="search" />
-            <q-toggle v-model="grid" label="Grid" />
+            <q-icon name="search" color='white' />
+            <q-toggle v-model="grid" color="red" label="Grid" />
           </template>
         </q-input>
 
         <q-btn
-          class="q-ml-md"
-          color="primary"
+        flat
+          class="q-ml-xl"
+          color="yellow"
           icon-right="archive"
           label="Export to csv"
           no-caps
@@ -144,6 +147,8 @@
     </q-table>
 
     <q-table
+    class="text-subtitle2 my-sticky-header-table "
+      table-header-class="text-white"
       v-if="queryToggle"
       :rows="queries"
       row-key="index"
@@ -168,8 +173,8 @@
           placeholder="Search"
         >
           <template v-slot:append>
-            <q-icon name="search" />
-            <q-toggle v-model="grid" label="Grid" />
+            <q-icon name="search" color="white" />
+            <q-toggle v-model="grid" color="red" label="Grid" />
           </template>
         </q-input>
       </template>
@@ -540,7 +545,16 @@ export default {
 };
 </script>
 
+
 <style lang="sass">
+
+
+
+.q-toggle__label.q-anchor--skip
+  color: white
+.q-table__title
+  color: white
+
 .my-sticky-header-table
   /* height or max-height is important */
   height: 310px
@@ -549,9 +563,8 @@ export default {
   .q-table__bottom,
   thead tr:first-child th
     /* bg color is important for th; just specify one */
-    background-color: #eeeeee
-    color: #673BB6
-    height: 52px
+    background-color: #673BB6
+
 
   thead tr th
     position: sticky
@@ -564,3 +577,4 @@ export default {
     /* height of all previous header rows */
     top: 48px
 </style>
+

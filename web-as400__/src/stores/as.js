@@ -33,15 +33,16 @@ export const useStore = defineStore("as", {
         async getQueriesAction(data) {
             // "http://localhost:3300/files/?library=wrkjexp&tablename=role_user"
             let url =
-                "http://10.100.0.30:3300/files/?library=" +
+                "http://10.100.0.30:3300/all/files/?library=" +
                 data.lib +
                 "&tablename=" +
                 data.fileName;
             let url1 =
-                "http://localhost:3300/files/?library=" +
+                "http://localhost:3300/files/all/?library=" +
                 data.lib +
                 "&tablename=" +
                 data.fileName;
+
 
             const response = await fetch(url, {
                 method: "GET",
