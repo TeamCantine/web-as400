@@ -33,7 +33,7 @@ export const useStore = defineStore("as", {
         async getQueriesAction(data) {
             // "http://localhost:3300/files/?library=wrkjexp&tablename=role_user"
             let url =
-                "http://10.100.0.30:3300/files/all/?library=" +
+                "http://" + window.location.hostname + ":3300/files/all/?library=" +
                 data.lib +
                 "&tablename=" +
                 data.fileName;
@@ -69,9 +69,9 @@ export const useStore = defineStore("as", {
         },
         // Files
         async getFilesAction(data) {
-            //"http://10.100.0.30:3300/files/PRTFFLD/?library=WRK90MUL&tablename=gcpro00f"
+            //"http://" + window.location.hostname + ":3300/files/PRTFFLD/?library=WRK90MUL&tablename=gcpro00f"
             let url =
-                "http://10.100.0.30:3300/files/PRTFFLD1/?library=" +
+                "http://" + window.location.hostname + ":3300/files/PRTFFLD1/?library=" +
                 data.lib +
                 "&tablename=" +
                 data.fileName;
@@ -109,9 +109,9 @@ export const useStore = defineStore("as", {
         async getFastFilesAction(data) {
 
 
-            //"http://10.100.0.30:3300/files/PRTFFLD/?library=WRK90MUL&tablename=gcpro00f"
+            //"http://" + window.location.hostname + ":3300/files/PRTFFLD/?library=WRK90MUL&tablename=gcpro00f"
             let url =
-                "http://10.100.0.30:3300/files/PRTFFLD_SMART/?search_word=" +
+                "http://" + window.location.hostname + ":3300/files/PRTFFLD_SMART/?search_word=" +
                 data.search_word +
                 "&user=" +
                 data.user +
@@ -159,9 +159,9 @@ export const useStore = defineStore("as", {
 
         //Users/libdat
         async getUsersAction(data) {
-            // "http://10.100.0.30:3300/files/SCHEMA/?library=WRK"
+            // "http://" + window.location.hostname + ":3300/files/SCHEMA/?library=WRK"
 
-            let url = "http://10.100.0.30:3300/files/SCHEMA/?library=" + data.user;
+            let url = "http://" + window.location.hostname + ":3300/files/SCHEMA/?library=" + data.user;
             let url1 = "http://localhost:3300/files/SCHEMA/?library=" + data.user;
 
             const response = await fetch(url, {
@@ -190,7 +190,7 @@ export const useStore = defineStore("as", {
         //Filenames
         async getFilenamesAction(data) {
             const url =
-                "http://10.100.0.30:3300/files/FILENAMES/?library=" + data.filename;
+                "http://" + window.location.hostname + ":3300/files/FILENAMES/?library=" + data.filename;
 
             const url1 =
                 "http://localhost:3300/files/FILENAMES/?library=" + data.filename;

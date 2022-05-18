@@ -50,7 +50,7 @@ export const prefStore = defineStore("pref", {
     actions: {
         async setUserPref(user) {
             // "http://localhost:3300/files/?library=wrkjexp&tablename=role_user"
-            let url = "http://10.100.0.30:3300/files/USERPREF/?user=" + user;
+            let url = "http://" + window.location.hostname + ":3300/files/USERPREF/?user=" + user;
             let url1 = "http://localhost:3300/files/USERPREF/?user=" + user;
 
             const response = await fetch(url, {
@@ -78,7 +78,7 @@ export const prefStore = defineStore("pref", {
         },
         async insertOrUpdateUserPrefs(pref) {
             // "http://localhost:3300/files/?library=wrkjexp&tablename=role_user"
-            let url = "http://10.100.0.30:3300/files/inserOrUpdatePref/?libdat=" + pref.user +
+            let url = "http://" + window.location.hostname + ":3300/files/inserOrUpdatePref/?libdat=" + pref.user +
                 "&PREFL1=" + pref.prefl1 + "&PREFL2=" + pref.prefl2 + "&PREFL3=" + pref.prefl3 + "&PREFL4=" + pref.prefl4 + "&PREFL5=" + pref.prefl5;
 
             let url1 = "http://localhost:3300/files/inserOrUpdatePref/?libdat=" + pref.user +

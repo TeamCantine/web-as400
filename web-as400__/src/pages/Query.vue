@@ -3,11 +3,12 @@
     <div class="q-pa-xl">
       <q-card class="my-card">
         <q-card-section>
+          <!-- Botton that create a SQL-->
           <q-btn
             color="primary"
             text-color="white"
             lable="Crea"
-            @click="queryStr.dialog = true"
+            @click="createBtnDialog"
           >
             Crea
           </q-btn>
@@ -17,9 +18,9 @@
         <q-card-section>
           <div class="flex flex-center" v-if="queryStr.loaderUserQuery">
             <q-spinner-ios color="primary" size="7em" />
-            <q-tooltip :offset="[0, 8]">QSpinnerIos</q-tooltip>
+            <q-tooltip :offset="[0, 8]">Caricando le query....</q-tooltip>
           </div>
-
+          <!-- Lista delle query -->
           <q-list
             v-else
             bordered
@@ -37,7 +38,6 @@
                 <q-item-section avatar>
                   <q-avatar
                     @click="exec(item.SQLSTR)"
-
                     color="primary"
                     text-color="white"
                     icon="play_arrow"
@@ -57,17 +57,20 @@
                 </q-item-section>
               </q-item>
 
-              <q-item-section style="max-width: 150px">
+              <q-item-section
+                style="max-width: 150px"
+                @click="loadDialog(item)"
+              >
                 <q-item-label>
                   <b> {{ item.TITLE }} </b>
                 </q-item-label>
               </q-item-section>
 
-              <q-item-section class="text-left">
+              <q-item-section class="text-left" @click="loadDialog(item)">
                 {{ item.SQLSTR }}
               </q-item-section>
 
-              <q-item-section class="text-left">
+              <q-item-section class="text-left" @click="loadDialog(item)">
                 {{ item.NOTE }}
               </q-item-section>
             </q-item>
@@ -80,6 +83,7 @@
    <b> errore:  {{queryStr.gError}} </b>
 </pre>
 
+    <!-- Tabella dei risultati-->
     <q-table
       v-else-if="queryStr.queries.length"
       :loading="queryStr.loadingTable"
@@ -102,7 +106,7 @@
         <q-inner-loading showing color="primary" />
       </template>
 
-      <template v-slot:top-right  >
+      <template v-slot:top-right>
         <q-input
           borderless
           dense
@@ -118,11 +122,76 @@
       </template>
     </q-table>
 
-    <q-dialog v-model="queryStr.dialog" >
-      <q-card style="width: 700px; max-width: 80vw">
+    <!-- Dialogo che crea le SQL-->
+
+    <q-dialog v-model="queryStr.dialog">
+      <q-card style="width: 900px; max-width: 80vw">
         <q-card-section>
-          <div class="text-h6 text-primary">Creazione query</div>
+          <div class="text-h6 text-primary">Composizione query</div>
         </q-card-section>
+
+        <q-card v-if="queryStr.createDialog" bordered class="my-card q-mb-xl">
+          <q-card-section>
+            <div class="q-pa-md row items-start q-gutter-md">
+              <h6 class="q-mt-lg">{{ queryStr.select }}</h6>
+
+              <q-select
+                filled
+                v-model="queryStr.libdatM"
+                use-input
+                input-debounce="0"
+                label="Libreria dati"
+                clearable
+                :options="queryStr.optionLibdat"
+                @filter="filterLibdat"
+                @update:model-value="onClickLibdat"
+                behavior="menu"
+
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey"
+                      >No results</q-item-section
+                    >
+                  </q-item>
+                </template>
+              </q-select>
+
+              <q-select
+                filled
+                v-model="queryStr.fileM"
+                use-input
+                input-debounce="0"
+                label="File"
+                clearable
+                :options="queryStr.optionFile"
+                @filter="filterFile"
+                @update:model-value="onClickFilename"
+                behavior="menu"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey"
+                      >No results</q-item-section
+                    >
+                  </q-item>
+                </template>
+              </q-select>
+
+              <div class="vertical">
+                <h6 class="q-ma-none">{{ queryStr.where }}</h6>
+                <q-toggle v-model="queryStr.toggleWhere" @update:model-value="changeAll" color="primary" />
+              </div>
+
+              <q-btn class="q-ml-xl" color="primary" @click="queryStr.compila">Compila</q-btn>
+            </div>
+            <q-card>
+              <q-card-section>
+                <pre class="text-subtitle1"> <b> {{ queryStr.preview }} </b>  </pre>
+              </q-card-section>
+            </q-card>
+          </q-card-section>
+        </q-card>
 
         <q-card-section class="q-pt-none my-modify-placeholder">
           <div class="q-gutter-md" style="min-width: 600px">
@@ -143,11 +212,14 @@
           <q-btn
             :disable="queryStr.title == '' || queryStr.sqlQuery == ''"
             flat
-            label="OK"
+            label="Save"
+            icon="save"
             color="primary"
             @click="insertUserQuery"
             v-close-popup
           />
+
+          <q-btn flat label="close" color="red" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -173,6 +245,16 @@ const loadUserQueries = async () => {
   await queryStr.selectUserQuery(q.localStorage.getItem("currentUser"));
   queryStr.loaderUserQuery = false;
 };
+
+const changeAll = (item) => {
+
+  queryStr.sqlAutomati()}
+
+
+  const onClickFilename = ()  =>  {
+    queryStr.sqlAutomati()
+     // loadFiles();
+    }
 
 const deleteItem = (user, title) => {
   q.dialog({
@@ -201,6 +283,39 @@ const deleteItem = (user, title) => {
     });
 };
 
+const onClickLibdat = () => {
+  loadFilenames();
+  queryStr.sqlAutomati()
+};
+
+const loadFilenames = async () => {
+  try {
+    const data = {
+      filename: queryStr.libdatM,
+    };
+    // this.loadingInputFiles = true;
+    await queryStr.getFilenamesAction(data);
+
+    //   queryStr.optionFile = [];
+
+    //    console.log("Prima")
+
+    // console.log(queryStr.getFilenames)
+
+    queryStr.filenamesArray = [];
+
+    queryStr.getFilenames.forEach((element) => {
+      queryStr.filenamesArray.push(
+        element.TABLE_NAME + " --> " + element.TABLE_TEXT
+      );
+    });
+
+    //   this.loadingInputFiles = false;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const insertUserQuery = async () => {
   await queryStr.insertUserQuery({
     user: q.localStorage.getItem("currentUser"),
@@ -208,7 +323,6 @@ const insertUserQuery = async () => {
     sqlstr: queryStr.sqlQuery,
     note: queryStr.note,
   });
-
   q.notify({
     color: "primary",
     textColor: "white",
@@ -216,20 +330,95 @@ const insertUserQuery = async () => {
     message: "Query inserita con successo",
     actions: [{ label: "Dismiss", color: "white", handler: () => {} }],
   });
-
   queryStr.user = ref("");
   queryStr.title = ref("");
   queryStr.sqlQuery = ref("");
   queryStr.note = ref("");
 };
 
+const loadDialog = (item) => {
+  queryStr.user = item.LIBDAT;
+  queryStr.title = item.TITLE;
+  queryStr.sqlQuery = item.SQLSTR;
+  queryStr.note = item.NOTE;
+
+  queryStr.dialog = true;
+  queryStr.createDialog = false;
+};
+
+const filterLibdat = (val, update) => {
+  if (val === "") {
+    update(() => {
+      queryStr.optionLibdat = queryStr.stringOptLibdat;
+    });
+    return;
+  }
+
+  update(() => {
+    const needle = val.toLowerCase();
+    queryStr.optionLibdat = queryStr.stringOptLibdat.filter(
+      (v) => v.toLowerCase().indexOf(needle) > -1
+    );
+  });
+};
+
+const filterFile = (val, update) => {
+  if (val === "") {
+    update(() => {
+      queryStr.optionFile = queryStr.filenamesArray;
+    });
+    return;
+  }
+
+  update(() => {
+    const needle = val.toLowerCase();
+    queryStr.optionFile = queryStr.filenamesArray.filter(
+      (v) => v.toLowerCase().indexOf(needle) > -1
+    );
+  });
+};
+
+const loadLibdat = async () => {
+
+
+  queryStr.sqlQuery = ref('')
+  queryStr.title = ref('')
+  queryStr.note = ref('')
+
+
+  try {
+    const data = {
+      user: "",
+    };
+    await queryStr.getLibdatAction(data);
+
+    queryStr.getLibl.forEach((element) => {
+      queryStr.stringOptLibdat.push(element.TABLE_SCHEMA);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const exec = (sql) => {
   startQuery(sql);
+};
+
+const createBtnDialog = () => {
+  loadLibdat();
+  // queryStr.sqlAutomati()
+  queryStr.dialog = true;
+  queryStr.createDialog = true;
 };
 
 onMounted(() => {
   loadUserQueries();
 });
+
+
+
+
+
 </script>
 
 <style lang="sass">

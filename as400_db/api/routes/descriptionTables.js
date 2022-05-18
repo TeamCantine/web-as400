@@ -308,10 +308,12 @@ router.get("/inserOrUpdateUserQuery", (req, res, next) => {
                 "', '" + q.note + "')"
 
             if (result.length > 0) {
-                sql = "UPDATE wrkjexp.DB_QUERIES SET SQLSTR = '" + q.sqlst.replace(new RegExp("'", 'g'), "`") + "', TITLE = '" + q.title +
+                sql = "UPDATE wrkjexp.DB_QUERIES SET SQLSTR = '" + q.sqlstr.replace(new RegExp("'", 'g'), "`") + "', TITLE = '" + q.title +
                     "', NOTE = '" + q.note + "' WHERE LIBDAT = '" +
                     q.libdat.toUpperCase() +
                     "' AND TITLE='" + q.title + "'"
+
+                console.log(q.sqlst)
             }
 
             pool
