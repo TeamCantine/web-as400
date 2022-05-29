@@ -36,7 +36,9 @@ export const queryStore = defineStore("query", {
 
             //tabella dei campi
             rows: [],
-            columns: [{
+            columns: [
+                
+                {
                     name: "COLUMN_NAME",
                     label: "CAMPO",
                     field: "COLUMN_NAME",
@@ -50,9 +52,18 @@ export const queryStore = defineStore("query", {
                     sortable: true,
                     align: "left",
                 },
+                {
+                    
+                    name: "KEY_COLUMN",
+                    label: "CHIAVE",
+                    field: "KEY_COLUMN",
+                    sortable: true,
+                    align: "left",
+                }
             ],
             columsLoading: false,
             selected: ref([]),
+            whereCompose: ref("")
 
 
         };
@@ -66,6 +77,21 @@ export const queryStore = defineStore("query", {
         getSelected: (state) => state.selected
     },
     actions: {
+
+
+setPreview(){
+
+    var temp = this.preview.substring(0, this.preview.indexOf('WHERE')) + " WHERE "
+
+this.selected.forEach(x => {
+    temp += "\n" + x.COLUMN_NAME + " = " + (x.DATA_TYPE === 'CHAR' ? "' '" : "" ) + "     AND "
+})
+temp = temp.slice(0, -4)
+this.preview = temp
+
+
+},
+
         sqlAutomati() {
             if (this.createDialog) {
                 var filename = "";
@@ -99,6 +125,8 @@ export const queryStore = defineStore("query", {
                 data.lib +
                 "&tablename=" +
                 data.fileName;
+
+                console.log(url)
 
             const response = await fetch(url, {
                 method: "GET",

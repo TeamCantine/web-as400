@@ -160,6 +160,13 @@ export default defineComponent({
           icon: "search",
           to: "/query",
         });
+
+              linksList.push({
+          title: "Test",
+          caption: "Only for test",
+          icon: "manage_accounts",
+          to: "/test",
+        });
       }
 
       pref.setUserPref(model.value);

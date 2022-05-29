@@ -146,6 +146,7 @@
                 @filter="filterLibdat"
                 @update:model-value="onClickLibdat"
                 behavior="menu"
+                  style="max-width: 150px; height: 10px;"
               >
                 <template v-slot:no-option>
                   <q-item>
@@ -158,6 +159,7 @@
 
               <q-select
                 filled
+                
                 v-model="queryStr.fileM"
                 use-input
                 input-debounce="0"
@@ -167,6 +169,9 @@
                 @filter="filterFile"
                 @update:model-value="onClickFilename"
                 behavior="menu"
+              style="max-width: 150px; max-height: 10px;"
+
+            
               >
                 <template v-slot:no-option>
                   <q-item>
@@ -192,30 +197,33 @@
             </div>
             <q-card>
               <q-card-section>
+                <div class="q-pa-md">
+                  <q-table
+                    v-if="queryStr.toggleWhere"
+                    dense
+                    title="Seleziona campi"
+                    :rows="queryStr.rows"
+                    :columns="queryStr.columns"
+                    row-key="COLUMN_TEXT"
+                    selection="multiple"
+                    boarderd
+                
+                    :rowsPerPage="30"
+                    :rows-per-page-options="[0, 8, 18]"
+                    style="height: 300px"
+                    v-model:selected="queryStr.selected"
+                    @update:selected="upadtePreview"
+                  />
+
+                </div>
                 <pre
                   class="text-subtitle1"
                 > <b> {{ queryStr.preview }} </b>  </pre>
               </q-card-section>
 
-              <q-card-section> </q-card-section>
             </q-card>
           </q-card-section>
         </q-card>
-
-        <div class="q-mt-md">
-
-
-          <q-table
-            title="Treats"
-            :rows="queryStr.rows"
-            :columns="queryStr.columns"
-            row-key="name"
-            selection="single"
-            @update.prevent:selected= "queryStr.getSelected"
-          ></q-table>
-
-          Selected: {{ JSON.stringify(queryStr.selected) }}
-        </div>
 
         <q-card-section class="q-pt-none my-modify-placeholder">
           <div class="q-gutter-md" style="min-width: 600px">
@@ -258,9 +266,16 @@ import { queryStore } from "../stores/query";
 const queryStr = queryStore();
 const q = useQuasar();
 
+const upadtePreview = (val) => {
+  console.log(val)
 
+queryStr.setPreview()
 
-const faa = (ev) => {    queryStr.selected = ev }
+}
+
+const faa = (ev) => {
+  queryStr.selected = ev;
+};
 
 const startQuery = async (sql) => {
   queryStr.loadingTable = true;
@@ -468,11 +483,6 @@ onMounted(() => {
 </script>
 
 <style lang="sass">
-
-
-
-
-
 .q-toggle__label.q-anchor--skip
   color: white
 .q-table__title
@@ -487,7 +497,6 @@ onMounted(() => {
   thead tr:first-child th
     /* bg color is important for th; just specify one */
     background-color: #673BB6
-
 
   thead tr th
     position: sticky
