@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="q-pa-xl">
+    <div class="q-px-xl">
       <q-card class="my-card">
         <q-card-section>
           <!-- Botton that create a SQL-->
@@ -81,13 +81,13 @@
 
     <pre class="flex flex-center text-red" v-if="queryStr.gError !== null">
    <b> errore:  {{queryStr.gError}} </b>
-</pre>
+   </pre>
 
     <!-- Tabella dei risultati-->
     <q-table
       v-else-if="queryStr.queries.length"
       :loading="queryStr.loadingTable"
-      class="q-ma-xl text-subtitle2 my-sticky-header-table"
+      class="q-mx-xl q-my-lg text-subtitle2 my-sticky-header-table"
       table-header-class="text-white"
       title="Risultati query"
       dense
@@ -146,7 +146,6 @@
                 @filter="filterLibdat"
                 @update:model-value="onClickLibdat"
                 behavior="menu"
-
               >
                 <template v-slot:no-option>
                   <q-item>
@@ -180,18 +179,43 @@
 
               <div class="vertical">
                 <h6 class="q-ma-none">{{ queryStr.where }}</h6>
-                <q-toggle v-model="queryStr.toggleWhere" @update:model-value="changeAll" color="primary" />
+                <q-toggle
+                  v-model="queryStr.toggleWhere"
+                  @update:model-value="changeAll"
+                  color="primary"
+                />
               </div>
 
-              <q-btn class="q-ml-xl" color="primary" @click="queryStr.compila">Compila</q-btn>
+              <q-btn class="q-ml-xl" color="primary" @click="queryStr.compila"
+                >Compila</q-btn
+              >
             </div>
             <q-card>
               <q-card-section>
-                <pre class="text-subtitle1"> <b> {{ queryStr.preview }} </b>  </pre>
+                <pre
+                  class="text-subtitle1"
+                > <b> {{ queryStr.preview }} </b>  </pre>
               </q-card-section>
+
+              <q-card-section> </q-card-section>
             </q-card>
           </q-card-section>
         </q-card>
+
+        <div class="q-mt-md">
+
+
+          <q-table
+            title="Treats"
+            :rows="queryStr.rows"
+            :columns="queryStr.columns"
+            row-key="name"
+            selection="single"
+            @update.prevent:selected= "queryStr.getSelected"
+          ></q-table>
+
+          Selected: {{ JSON.stringify(queryStr.selected) }}
+        </div>
 
         <q-card-section class="q-pt-none my-modify-placeholder">
           <div class="q-gutter-md" style="min-width: 600px">
@@ -234,6 +258,10 @@ import { queryStore } from "../stores/query";
 const queryStr = queryStore();
 const q = useQuasar();
 
+
+
+const faa = (ev) => {    queryStr.selected = ev }
+
 const startQuery = async (sql) => {
   queryStr.loadingTable = true;
   await queryStr.excecQuery(sql);
@@ -247,14 +275,40 @@ const loadUserQueries = async () => {
 };
 
 const changeAll = (item) => {
+  queryStr.sqlAutomati();
 
-  queryStr.sqlAutomati()}
+  // carica la tabella con i dati
+  if (queryStr.toggleWhere) loadColumns();
+};
 
+const loadColumns = async () => {
+  if (queryStr.fileM && queryStr.libdatM) {
+    queryStr.columsLoading = true;
+    queryStr.rows = [];
+    try {
+      const data = {
+        lib: queryStr.libdatM,
+        fileName: queryStr.fileM.split("-->")[0].trim(),
+      };
 
-  const onClickFilename = ()  =>  {
-    queryStr.sqlAutomati()
-     // loadFiles();
+      console.log("Dove sono");
+      console.log(data);
+
+      await queryStr.getColumsAction(data);
+      //     this.rows = this.as.getFiles;
+
+      queryStr.columsLoading = false;
+    } catch (error) {
+      console.log(error);
+      queryStr.columsLoading = false;
     }
+  }
+};
+
+const onClickFilename = () => {
+  queryStr.sqlAutomati();
+  // loadFiles();
+};
 
 const deleteItem = (user, title) => {
   q.dialog({
@@ -285,7 +339,7 @@ const deleteItem = (user, title) => {
 
 const onClickLibdat = () => {
   loadFilenames();
-  queryStr.sqlAutomati()
+  queryStr.sqlAutomati();
 };
 
 const loadFilenames = async () => {
@@ -379,12 +433,9 @@ const filterFile = (val, update) => {
 };
 
 const loadLibdat = async () => {
-
-
-  queryStr.sqlQuery = ref('')
-  queryStr.title = ref('')
-  queryStr.note = ref('')
-
+  queryStr.sqlQuery = ref("");
+  queryStr.title = ref("");
+  queryStr.note = ref("");
 
   try {
     const data = {
@@ -414,11 +465,6 @@ const createBtnDialog = () => {
 onMounted(() => {
   loadUserQueries();
 });
-
-
-
-
-
 </script>
 
 <style lang="sass">

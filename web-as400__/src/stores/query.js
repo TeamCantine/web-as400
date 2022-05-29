@@ -33,8 +33,28 @@ export const queryStore = defineStore("query", {
             optionFile: ref[[]],
             stringOptFile: ref([]),
             filenamesArray: [],
-            //
-            rows: ref([]),
+
+            //tabella dei campi
+            rows: [],
+            columns: [{
+                    name: "COLUMN_NAME",
+                    label: "CAMPO",
+                    field: "COLUMN_NAME",
+                    sortable: true,
+                    align: "center",
+                },
+                {
+                    name: "COLUMN_TEXT",
+                    label: "DESCRIZIONE",
+                    field: "COLUMN_TEXT",
+                    sortable: true,
+                    align: "left",
+                },
+            ],
+            columsLoading: false,
+            selected: ref([]),
+
+
         };
     },
     getters: {
@@ -42,6 +62,8 @@ export const queryStore = defineStore("query", {
         getQueriesSaved: (state) => state.queriesSaved,
         getLibl: (state) => state.optionLibdat,
         getFilenames: (state) => state.optionFile,
+        getColumns: (state) => state.rows,
+        getSelected: (state) => state.selected
     },
     actions: {
         sqlAutomati() {
@@ -62,6 +84,47 @@ export const queryStore = defineStore("query", {
         compila() {
             this.sqlQuery = this.preview;
         },
+
+
+        // Files
+        async getColumsAction(data) {
+            //"http://" + window.location.hostname + ":3300/files/PRTFFLD/?library=WRK90MUL&tablename=gcpro00f"
+            let url =
+                "http://" + window.location.hostname + ":3300/files/PRTFFLD1/?library=" +
+                data.lib +
+                "&tablename=" +
+                data.fileName;
+            let url1 =
+                "http://localhost:3300/files/PRTFFLD1/?library=" +
+                data.lib +
+                "&tablename=" +
+                data.fileName;
+
+            const response = await fetch(url, {
+                method: "GET",
+                cache: "no-cache",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                redirect: "follow",
+                referrerPolicy: "no-referrer",
+                enctype: "mutipart/form-data",
+            });
+
+            const responseData = await response.json();
+
+            if (!response.ok) {
+                if (responseData.code === 409) {
+                    throw new Error(responseData.message);
+                } else
+                    throw new Error("Request failed with error code: " + response.status);
+            }
+
+            this.rows = responseData;
+        },
+
+
 
         //Filenames
         async getFilenamesAction(data) {

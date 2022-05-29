@@ -39,7 +39,7 @@
 
         <div class="q-ml-md">
           Dark mode
-          <q-toggle color="red" v-model="dark" @click="q.dark.toggle()" />
+          <q-toggle color="red" v-model="dark" @click="toggleDark" />
         </div>
       </q-toolbar>
     </q-header>
@@ -180,6 +180,21 @@ export default defineComponent({
       }
     };
 
+
+
+
+    const toggleDark = () => {
+      q.dark.toggle()
+      q.localStorage.set("darkMode", q.dark.isActive)
+    }
+
+    const loadDarkMode = () =>  {
+      console.log("dark mode:")
+      console.log(q.localStorage.getItem("darkMode"))
+      dark.value = q.localStorage.getItem("darkMode")
+      q.dark.set(dark.value)
+    }
+
     return {
       essentialLinks: linksList,
       leftDrawerOpen,
@@ -187,6 +202,8 @@ export default defineComponent({
         leftDrawerOpen.value = !leftDrawerOpen.value;
       },
       dark,
+      toggleDark,
+      loadDarkMode,
       filterFn,
       model,
       options,
@@ -201,8 +218,10 @@ export default defineComponent({
   },
 
   mounted() {
+    this.loadDarkMode()
     this.loadUserPrefs();
     this.loadUsers();
+
   },
 });
 </script>

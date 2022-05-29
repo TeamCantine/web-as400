@@ -61,7 +61,8 @@
               v-model="queryToggle"
               size="xl"
               icon="visibility"
-              label="Query first 10000 Records"
+              label="Query first 5000 Records"
+              color="red"
             />
           </div>
 
@@ -550,8 +551,7 @@ export default {
 
 
 
-.q-toggle__label.q-anchor--skip
-  color: white
+
 .q-table__title
   color: white
 
