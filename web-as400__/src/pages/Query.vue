@@ -124,80 +124,137 @@
 
     <!-- Dialogo che crea le SQL-->
 
-    <q-dialog v-model="queryStr.dialog">
+    <q-dialog v-model="queryStr.dialog"  transition-show="rotate" transition-hide="rotate" >
       <q-card style="width: 900px; max-width: 80vw">
         <q-card-section>
           <div class="text-h6 text-primary">Composizione query</div>
         </q-card-section>
 
-        <q-card v-if="queryStr.createDialog" bordered class="my-card q-mb-xl">
-          <q-card-section>
-            <div class="q-pa-md row items-start q-gutter-md">
-              <h6 class="q-mt-lg">{{ queryStr.select }}</h6>
+        <q-separator></q-separator>
 
-              <q-select
-                filled
-                v-model="queryStr.libdatM"
-                use-input
-                input-debounce="0"
-                label="Libreria dati"
-                clearable
-                :options="queryStr.optionLibdat"
-                @filter="filterLibdat"
-                @update:model-value="onClickLibdat"
-                behavior="menu"
-                  style="max-width: 150px; height: 10px;"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey"
-                      >No results</q-item-section
-                    >
-                  </q-item>
-                </template>
-              </q-select>
 
-              <q-select
-                filled
-                
-                v-model="queryStr.fileM"
-                use-input
-                input-debounce="0"
-                label="File"
-                clearable
-                :options="queryStr.optionFile"
-                @filter="filterFile"
-                @update:model-value="onClickFilename"
-                behavior="menu"
-              style="max-width: 150px; max-height: 10px;"
 
-            
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey"
-                      >No results</q-item-section
-                    >
-                  </q-item>
-                </template>
-              </q-select>
 
-              <div class="vertical">
-                <h6 class="q-ma-none">{{ queryStr.where }}</h6>
-                <q-toggle
-                  v-model="queryStr.toggleWhere"
-                  @update:model-value="changeAll"
-                  color="primary"
-                />
-              </div>
 
-              <q-btn class="q-ml-xl" color="primary" @click="queryStr.compila"
-                >Compila</q-btn
-              >
+        <div style="max-height: 80vh" class="my-modify-placeholder scroll">
+
+
+
+
+<q-card class="q-ma-lg" >
+
+
+
+        <q-card-section  >
+          <div class="row q-col-gutter-x-md">
+            <div class="col">
+              <q-input dense filled v-model="queryStr.title" label="Titolo" />
             </div>
-            <q-card>
+            <div class="col">
+              <q-input
+                v-model="queryStr.sqlQuery"
+                filled
+                dense
+                autogrow
+                label="Scriva la SQL qui"
+              />
+            </div>
+
+            <div class="col">
+              <q-input
+                dense
+                v-model="queryStr.note"
+                filled
+                autogrow
+                label="Note"
+              />
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+
+
+
+
+        <q-card class="q-ma-lg">
+
+          <q-card-section
+            v-if="queryStr.createDialog"
+            bordered
+            class="my-card q-mb-xl"
+          >
+
               <q-card-section>
-                <div class="q-pa-md">
+                <div class="q-pa-md row items-start q-gutter-md">
+                  <p class="text-subtitle2 text-red q-mt-lg">
+                    <b>
+                      {{ queryStr.select }}
+                    </b>
+                  </p>
+
+                  <q-select
+                    filled
+                    dense
+                    v-model="queryStr.libdatM"
+                    use-input
+                    input-debounce="0"
+                    label="Libreria dati"
+                    clearable
+                    :options="queryStr.optionLibdat"
+                    @filter="filterLibdat"
+                    @update:model-value="onClickLibdat"
+                    behavior="menu"
+                    style="max-width: 150px; height: 10px"
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey"
+                          >No results</q-item-section
+                        >
+                      </q-item>
+                    </template>
+                  </q-select>
+
+                  <q-select
+                    filled
+                    dense
+                    hide-bottom-space
+                    :loading="queryStr.loadingFileM"
+                    v-model="queryStr.fileM"
+                    use-input
+                    input-debounce="0"
+                    label="File"
+                    clearable
+                    :options="queryStr.optionFile"
+                    @filter="filterFile"
+                    @update:model-value="onClickFilename"
+                    behavior="menu"
+                    style="max-width: 280px; max-height: 10px important!"
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey"
+                          >No results</q-item-section
+                        >
+                      </q-item>
+                    </template>
+                  </q-select>
+
+                  <div class="vertical">
+                    <p class="text-subtitle2 text-red q-ma-none">
+                      {{ queryStr.where }}
+                    </p>
+                    <q-toggle
+                      v-model="queryStr.toggleWhere"
+                      @update:model-value="changeAll"
+                      color="primary"
+                    />
+                  </div>
+                </div>
+              </q-card-section>
+              <q-separator></q-separator>
+              <q-card-section >
+                <div class="q-py-md">
                   <q-table
                     v-if="queryStr.toggleWhere"
                     dense
@@ -207,38 +264,43 @@
                     row-key="COLUMN_TEXT"
                     selection="multiple"
                     boarderd
-                
                     :rowsPerPage="30"
                     :rows-per-page-options="[0, 8, 18]"
-                    style="height: 300px"
+                    style="height: 250px"
                     v-model:selected="queryStr.selected"
                     @update:selected="upadtePreview"
                   />
 
+                  <pre class="text-subtitle2">
+                <b> {{ queryStr.preview }} </b>
+                </pre>
+                  <q-btn
+                    size="sm"
+                    class="q-ml-xl"
+                    color="primary"
+                    @click="queryStr.compila"
+                    icon="settings"
+                    >Compila</q-btn
+                  >
                 </div>
-                <pre
-                  class="text-subtitle1"
-                > <b> {{ queryStr.preview }} </b>  </pre>
               </q-card-section>
 
-            </q-card>
           </q-card-section>
+
+
         </q-card>
 
-        <q-card-section class="q-pt-none my-modify-placeholder">
-          <div class="q-gutter-md" style="min-width: 600px">
-            <q-input filled v-model="queryStr.title" label="Titolo" />
 
-            <q-input
-              v-model="queryStr.sqlQuery"
-              filled
-              autogrow
-              label="Scriva la SQL qui"
-            />
 
-            <q-input v-model="queryStr.note" filled autogrow label="Note" />
-          </div>
-        </q-card-section>
+
+
+
+
+</div>
+
+
+
+
 
         <q-card-actions align="right">
           <q-btn
@@ -267,11 +329,10 @@ const queryStr = queryStore();
 const q = useQuasar();
 
 const upadtePreview = (val) => {
-  console.log(val)
+  console.log(val);
 
-queryStr.setPreview()
-
-}
+  queryStr.setPreview();
+};
 
 const faa = (ev) => {
   queryStr.selected = ev;
@@ -362,14 +423,8 @@ const loadFilenames = async () => {
     const data = {
       filename: queryStr.libdatM,
     };
-    // this.loadingInputFiles = true;
+    queryStr.loadingFileM = true;
     await queryStr.getFilenamesAction(data);
-
-    //   queryStr.optionFile = [];
-
-    //    console.log("Prima")
-
-    // console.log(queryStr.getFilenames)
 
     queryStr.filenamesArray = [];
 
@@ -379,7 +434,7 @@ const loadFilenames = async () => {
       );
     });
 
-    //   this.loadingInputFiles = false;
+    queryStr.loadingFileM = false;
   } catch (error) {
     console.log(error);
   }
@@ -483,6 +538,10 @@ onMounted(() => {
 </script>
 
 <style lang="sass">
+.q-textarea.q-field--dense.q-field--labeled
+  font-size: 15px
+
+
 .q-toggle__label.q-anchor--skip
   color: white
 .q-table__title

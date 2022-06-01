@@ -33,11 +33,12 @@ export const queryStore = defineStore("query", {
             optionFile: ref[[]],
             stringOptFile: ref([]),
             filenamesArray: [],
+            loadingFileM: false,
 
             //tabella dei campi
             rows: [],
             columns: [
-                
+
                 {
                     name: "COLUMN_NAME",
                     label: "CAMPO",
@@ -53,7 +54,7 @@ export const queryStore = defineStore("query", {
                     align: "left",
                 },
                 {
-                    
+
                     name: "KEY_COLUMN",
                     label: "CHIAVE",
                     field: "KEY_COLUMN",
@@ -79,18 +80,19 @@ export const queryStore = defineStore("query", {
     actions: {
 
 
-setPreview(){
+        setPreview() {
 
-    var temp = this.preview.substring(0, this.preview.indexOf('WHERE')) + " WHERE "
+            var temp = this.preview.substring(0, this.preview.indexOf('WHERE')) + " WHERE "
 
-this.selected.forEach(x => {
-    temp += "\n" + x.COLUMN_NAME + " = " + (x.DATA_TYPE === 'CHAR' ? "' '" : "" ) + "     AND "
-})
-temp = temp.slice(0, -4)
-this.preview = temp
+            this.selected.forEach(x => {
+                temp += "\n" + x.COLUMN_NAME + " = " + (x.DATA_TYPE === 'CHAR' ? "' '" : "") + "     AND "
+            })
+            if (this.selected)
+                temp = temp.slice(0, -4)
+            this.preview = temp
 
 
-},
+        },
 
         sqlAutomati() {
             if (this.createDialog) {
@@ -126,7 +128,7 @@ this.preview = temp
                 "&tablename=" +
                 data.fileName;
 
-                console.log(url)
+            console.log(url)
 
             const response = await fetch(url, {
                 method: "GET",
