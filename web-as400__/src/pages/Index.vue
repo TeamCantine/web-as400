@@ -14,8 +14,6 @@
 
         <div class="q-gutter-md row">
           <q-select
-
-
             filled
             v-model="model"
             use-input
@@ -56,7 +54,7 @@
             </template>
           </q-select>
 
-          <div class="q-ml-lg">
+          <div class="q-ml-lg scritta">
             <q-toggle
               v-model="queryToggle"
               size="xl"
@@ -66,12 +64,7 @@
             />
           </div>
 
-          <div style="margin-left: 130px" inline class="flex flex-left">
-
-
-
-
-
+          <div inline class="flex flex-left">
             <q-input
               style="min-width: 200px"
               square
@@ -88,15 +81,25 @@
             </q-input>
 
             <q-btn
-            :loading="loading"
+              :loading="loading"
               inline
               color="primary q-ml-sm"
               label="Search"
               icon-right="send"
               @click="fastSearch"
-              :disable="fastWordSearch == null || fastWordSearch == '' || fastWordSearch.length < 3"
+              :disable="
+                fastWordSearch == null ||
+                fastWordSearch == '' ||
+                fastWordSearch.length < 3
+              "
             />
-            <q-checkbox class="q-ml-xl" size="lg" left-label v-model="deep" label="Ricerca profonda" />
+            <q-checkbox
+              class="q-ml-xl"
+              size="lg"
+              left-label
+              v-model="deep"
+              label="Ricerca profonda"
+            />
           </div>
         </div>
       </q-card-section>
@@ -106,7 +109,7 @@
       v-if="!queryToggle"
       dense
       auto-width
-      class="text-subtitle2 my-sticky-header-table "
+      class="text-subtitle2 my-sticky-header-table"
       table-header-class="text-white"
       :grid="grid"
       :rows="rows"
@@ -130,13 +133,13 @@
           placeholder="Search word"
         >
           <template v-slot:append>
-            <q-icon name="search" color='white' />
+            <q-icon name="search" color="white" />
             <q-toggle v-model="grid" color="red" label="Grid" />
           </template>
         </q-input>
 
         <q-btn
-        flat
+          flat
           class="q-ml-xl"
           color="yellow"
           icon-right="archive"
@@ -148,7 +151,7 @@
     </q-table>
 
     <q-table
-    class="text-subtitle2 my-sticky-header-table "
+      class="text-subtitle2 my-sticky-header-table"
       table-header-class="text-white"
       v-if="queryToggle"
       :rows="queries"
@@ -430,7 +433,7 @@ export default {
                 ? this.q.localStorage.getItem("currentUser").trim()
                 : "",
             search_word: this.fastWordSearch.trim(),
-            all: (this.deep) ? 'all' : 'no'
+            all: this.deep ? "all" : "no",
           };
 
           await this.as.getFastFilesAction(data);
@@ -528,8 +531,7 @@ export default {
       }
     },
     fastWordSearch(newQuestion, oldQuestion) {
-      if (newQuestion ) {
-
+      if (newQuestion) {
       }
     },
   },
@@ -546,11 +548,11 @@ export default {
 };
 </script>
 
-
 <style lang="sass">
 
 
-
+.scritta .q-toggle div.q-toggle__label.q-anchor--skip
+  color: #673BB6
 
 .q-table__title
   color: white
@@ -577,4 +579,3 @@ export default {
     /* height of all previous header rows */
     top: 48px
 </style>
-

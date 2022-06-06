@@ -80,7 +80,7 @@
     </div>
 
     <pre class="flex flex-center text-red" v-if="queryStr.gError !== null">
-   <b> errore:  {{queryStr.gError}} </b>
+   <b> errore:  {{ queryStr.gError }} </b>
    </pre>
 
     <!-- Tabella dei risultati-->
@@ -124,7 +124,11 @@
 
     <!-- Dialogo che crea le SQL-->
 
-    <q-dialog v-model="queryStr.dialog"  transition-show="rotate" transition-hide="rotate" >
+    <q-dialog
+      v-model="queryStr.dialog"
+      transition-show="rotate"
+      transition-hide="rotate"
+    >
       <q-card style="width: 900px; max-width: 80vw">
         <q-card-section>
           <div class="text-h6 text-primary">Composizione query</div>
@@ -132,65 +136,68 @@
 
         <q-separator></q-separator>
 
-
-
-
-
         <div style="max-height: 80vh" class="my-modify-placeholder scroll">
+          <q-card class="q-ma-lg">
+            <q-card-section>
+              <div class="row q-col-gutter-x-md">
+                <div class="col">
+                  <q-input
+                    dense
+                    filled
+                    v-model="queryStr.title"
+                    label="Titolo"
+                  />
+                </div>
+                <div class="col">
+                  <q-input
+                    v-model="queryStr.sqlQuery"
+                    filled
+                    dense
+                    autogrow
+                    label="Scrivi la SQL qui"
+                  />
+                </div>
 
+                <div class="col">
+                  <q-input
+                    dense
+                    v-model="queryStr.note"
+                    filled
+                    autogrow
+                    label="Note"
+                  />
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
 
-
-
-<q-card class="q-ma-lg" >
-
-
-
-        <q-card-section  >
-          <div class="row q-col-gutter-x-md">
-            <div class="col">
-              <q-input dense filled v-model="queryStr.title" label="Titolo" />
-            </div>
-            <div class="col">
-              <q-input
-                v-model="queryStr.sqlQuery"
-                filled
-                dense
-                autogrow
-                label="Scriva la SQL qui"
-              />
-            </div>
-
-            <div class="col">
-              <q-input
-                dense
-                v-model="queryStr.note"
-                filled
-                autogrow
-                label="Note"
-              />
-            </div>
-          </div>
-        </q-card-section>
-      </q-card>
-
-
-
-
-        <q-card class="q-ma-lg">
-
-          <q-card-section
-            v-if="queryStr.createDialog"
-            bordered
-            class="my-card q-mb-xl"
-          >
-
+          <q-card class="q-ma-lg">
+            <q-card-section
+              v-if="queryStr.createDialog"
+              bordered
+              class="my-card q-mb-xl"
+            >
               <q-card-section>
+                <div class="row">
+                  <q-option-group
+                      v-model="group"
+                      @update:model-value="onGroupChange"
+                      :options="pref.getUserPrefAsObj"
+                      color="primary"
+                      inline
+                    />
+                  </div>
                 <div class="q-pa-md row items-start q-gutter-md">
-                  <p class="text-subtitle2 text-red q-mt-lg">
-                    <b>
-                      {{ queryStr.select }}
-                    </b>
-                  </p>
+
+                  
+  
+                     
+                    <p class="text-subtitle2 text-red q-mt-lg">
+                      <b>
+                        {{ queryStr.select }}
+                      </b>
+                    </p>
+                  
 
                   <q-select
                     filled
@@ -245,6 +252,7 @@
                       {{ queryStr.where }}
                     </p>
                     <q-toggle
+                    :disable="!queryStr.fileM"
                       v-model="queryStr.toggleWhere"
                       @update:model-value="changeAll"
                       color="primary"
@@ -252,11 +260,10 @@
                   </div>
                 </div>
               </q-card-section>
-              <q-separator></q-separator>
-              <q-card-section >
-                <div class="q-py-md">
+              <q-card-section>
+                <div class="">
                   <q-table
-                    v-if="queryStr.toggleWhere"
+                    v-show="queryStr.toggleWhere"
                     dense
                     title="Seleziona campi"
                     :rows="queryStr.rows"
@@ -266,41 +273,29 @@
                     boarderd
                     :rowsPerPage="30"
                     :rows-per-page-options="[0, 8, 18]"
-                    style="height: 250px"
+                    style="height: 280px"
                     v-model:selected="queryStr.selected"
                     @update:selected="upadtePreview"
                   />
-
+<!--   
                   <pre class="text-subtitle2">
                 <b> {{ queryStr.preview }} </b>
                 </pre>
+            
                   <q-btn
                     size="sm"
                     class="q-ml-xl"
                     color="primary"
                     @click="queryStr.compila"
                     icon="settings"
-                    >Compila</q-btn
-                  >
+                    >Compila
+                  </q-btn>
+                      -->
                 </div>
               </q-card-section>
-
-          </q-card-section>
-
-
-        </q-card>
-
-
-
-
-
-
-
-</div>
-
-
-
-
+            </q-card-section>
+          </q-card>
+        </div>
 
         <q-card-actions align="right">
           <q-btn
@@ -325,8 +320,13 @@ import { onMounted, ref } from "vue";
 import { useQuasar } from "quasar";
 import { queryStore } from "../stores/query";
 
+import { prefStore } from "../stores/pref";
+
 const queryStr = queryStore();
 const q = useQuasar();
+
+const pref = prefStore();
+const group = ref("");
 
 const upadtePreview = (val) => {
   console.log(val);
@@ -347,7 +347,20 @@ const startQuery = async (sql) => {
 const loadUserQueries = async () => {
   queryStr.loaderUserQuery = true;
   await queryStr.selectUserQuery(q.localStorage.getItem("currentUser"));
+
   queryStr.loaderUserQuery = false;
+  // load the files
+  group.value = pref.getUserPrefAsObj[0].value;
+  queryStr.libdatM = group.value;
+  onClickLibdat();
+};
+
+const onGroupChange = () => {
+  queryStr.libdatM = group.value;
+  onClickLibdat();
+  queryStr.fileM = ref(null);
+  queryStr.selected = ref([])
+  queryStr.rows = []
 };
 
 const changeAll = (item) => {
@@ -384,6 +397,9 @@ const loadColumns = async () => {
 const onClickFilename = () => {
   queryStr.sqlAutomati();
   // loadFiles();
+  changeAll({})
+  queryStr.selected = ref([])
+
 };
 
 const deleteItem = (user, title) => {

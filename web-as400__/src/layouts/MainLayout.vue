@@ -147,6 +147,13 @@ export default defineComponent({
       ) {
         model.value = q.localStorage.getItem("currentUser");
 
+          linksList.push({
+            title: "Query",
+            caption: "Le mie query",
+            icon: "search",
+            to: "/query",
+          });
+          
         linksList.push({
           title: "Preferenze",
           caption: "pref",
@@ -154,19 +161,14 @@ export default defineComponent({
           to: "/preference",
         });
 
-        linksList.push({
-          title: "Query",
-          caption: "Le mie query",
-          icon: "search",
-          to: "/query",
-        });
-
+/*
               linksList.push({
           title: "Test",
           caption: "Only for test",
           icon: "manage_accounts",
           to: "/test",
         });
+        */
       }
 
       pref.setUserPref(model.value);
