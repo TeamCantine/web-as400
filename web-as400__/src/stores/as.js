@@ -75,11 +75,6 @@ export const useStore = defineStore("as", {
                 data.lib +
                 "&tablename=" +
                 data.fileName;
-            let url1 =
-                "http://localhost:3300/files/PRTFFLD1/?library=" +
-                data.lib +
-                "&tablename=" +
-                data.fileName;
 
             const response = await fetch(url, {
                 method: "GET",

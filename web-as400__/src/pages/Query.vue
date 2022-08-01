@@ -4,12 +4,7 @@
       <q-card class="my-card">
         <q-card-section>
           <!-- Botton that create a SQL-->
-          <q-btn
-            color="primary"
-            text-color="white"
-            lable="Crea"
-            @click="createBtnDialog"
-          >
+          <q-btn color="primary" text-color="white" lable="Crea" @click="createBtnDialog">
             Crea
           </q-btn>
         </q-card-section>
@@ -21,46 +16,22 @@
             <q-tooltip :offset="[0, 8]">Caricando le query....</q-tooltip>
           </div>
           <!-- Lista delle query -->
-          <q-list
-            v-else
-            bordered
-            separator
-            class="text-primary text-subtitle2"
-            style="max-height: 400px; overflow: auto"
-          >
-            <q-item
-              dense
-              v-for="item in queryStr.queriesSaved"
-              clickable
-              :key="item.SQLSTR"
-            >
+          <q-list v-else bordered separator class="text-primary text-subtitle2"
+            style="max-height: 400px; overflow: auto">
+            <q-item dense v-for="item in queryStr.queriesSaved" clickable :key="item.SQLSTR">
               <q-item dense clickable class="q-mr-sm">
                 <q-item-section avatar>
-                  <q-avatar
-                    @click="exec(item.SQLSTR)"
-                    color="primary"
-                    text-color="white"
-                    icon="play_arrow"
-                  />
+                  <q-avatar @click="exec(item.SQLSTR)" color="primary" text-color="white" icon="play_arrow" />
                 </q-item-section>
               </q-item>
 
               <q-item dense clickable class="q-mr-lg">
                 <q-item-section avatar>
-                  <q-avatar
-                    @click="deleteItem(item.LIBDAT, item.TITLE)"
-                    rounded
-                    flat
-                    text-color="red"
-                    icon="delete"
-                  />
+                  <q-avatar @click="deleteItem(item.LIBDAT, item.TITLE)" rounded flat text-color="red" icon="delete" />
                 </q-item-section>
               </q-item>
 
-              <q-item-section
-                style="max-width: 150px"
-                @click="loadDialog(item)"
-              >
+              <q-item-section style="max-width: 150px" @click="loadDialog(item)">
                 <q-item-label>
                   <b> {{ item.TITLE }} </b>
                 </q-item-label>
@@ -84,36 +55,17 @@
    </pre>
 
     <!-- Tabella dei risultati-->
-    <q-table
-      v-else-if="queryStr.queries.length"
-      :loading="queryStr.loadingTable"
-      class="q-mx-xl q-my-lg text-subtitle2 my-sticky-header-table"
-      table-header-class="text-white"
-      title="Risultati query"
-      dense
-      boarderd
-      auto-width
-      separator="cell"
-      :rows="queryStr.queries"
-      row-key="name"
-      :rowsPerPage="30"
-      :rows-per-page-options="[0, 8, 18]"
-      style="height: 480px"
-      :filter="queryStr.filter"
-      :grid="queryStr.grid"
-    >
+    <q-table v-else-if="queryStr.queries.length" :loading="queryStr.loadingTable"
+      class="q-mx-xl q-my-lg text-subtitle2 my-sticky-header-table" table-header-class="text-white"
+      title="Risultati query" dense boarderd auto-width separator="cell" :rows="queryStr.queries" row-key="name"
+      :rowsPerPage="30" :rows-per-page-options="[0, 8, 18]" style="height: 480px" :filter="queryStr.filter"
+      :grid="queryStr.grid">
       <template v-slot:loading>
         <q-inner-loading showing color="primary" />
       </template>
 
       <template v-slot:top-right>
-        <q-input
-          borderless
-          dense
-          debounce="300"
-          v-model="queryStr.filter"
-          placeholder="Search word"
-        >
+        <q-input borderless dense debounce="300" v-model="queryStr.filter" placeholder="Search word">
           <template v-slot:append>
             <q-icon name="search" color="white" />
             <q-toggle color="red" v-model="queryStr.grid" label="Grid" />
@@ -124,12 +76,8 @@
 
     <!-- Dialogo che crea le SQL-->
 
-    <q-dialog
-      v-model="queryStr.dialog"
-      transition-show="rotate"
-      transition-hide="rotate"
-    >
-      <q-card style="width: 900px; max-width: 80vw">
+    <q-dialog v-model="queryStr.dialog" transition-show="rotate" transition-hide="rotate">
+      <q-card style="width: 1800px; max-width: 90vw; height: 90%;">
         <q-card-section>
           <div class="text-h6 text-primary">Composizione query</div>
         </q-card-section>
@@ -141,108 +89,55 @@
             <q-card-section>
               <div class="row q-col-gutter-x-md">
                 <div class="col">
-                  <q-input
-                    dense
-                    filled
-                    v-model="queryStr.title"
-                    label="Titolo"
-                  />
+                  <q-input dense filled v-model="queryStr.title" label="Titolo" />
                 </div>
                 <div class="col">
-                  <q-input
-                    v-model="queryStr.sqlQuery"
-                    filled
-                    dense
-                    autogrow
-                    label="Scrivi la SQL qui"
-                  />
+                  <q-input v-model="queryStr.sqlQuery" filled dense autogrow label="Scrivi la SQL qui" />
                 </div>
 
                 <div class="col">
-                  <q-input
-                    dense
-                    v-model="queryStr.note"
-                    filled
-                    autogrow
-                    label="Note"
-                  />
+                  <q-input dense v-model="queryStr.note" filled autogrow label="Note" />
                 </div>
               </div>
             </q-card-section>
           </q-card>
 
           <q-card class="q-ma-lg">
-            <q-card-section
-              v-if="queryStr.createDialog"
-              bordered
-              class="my-card q-mb-xl"
-            >
+            <q-card-section v-if="queryStr.createDialog" bordered class="my-card q-mb-xl">
               <q-card-section>
                 <div class="row">
-                  <q-option-group
-                      v-model="group"
-                      @update:model-value="onGroupChange"
-                      :options="pref.getUserPrefAsObj"
-                      color="primary"
-                      inline
-                    />
-                  </div>
+                  <q-option-group v-model="group" @update:model-value="onGroupChange" :options="pref.getUserPrefAsObj"
+                    color="primary" inline />
+                </div>
                 <div class="q-pa-md row items-start q-gutter-md">
 
-                  
-  
-                     
-                    <p class="text-subtitle2 text-red q-mt-lg">
-                      <b>
-                        {{ queryStr.select }}
-                      </b>
-                    </p>
-                  
 
-                  <q-select
-                    filled
-                    dense
-                    v-model="queryStr.libdatM"
-                    use-input
-                    input-debounce="0"
-                    label="Libreria dati"
-                    clearable
-                    :options="queryStr.optionLibdat"
-                    @filter="filterLibdat"
-                    @update:model-value="onClickLibdat"
-                    behavior="menu"
-                    style="max-width: 150px; height: 10px"
-                  >
+
+
+                  <p class="text-subtitle2 text-red q-mt-lg">
+                    <b>
+                      {{ queryStr.select }}
+                    </b>
+                  </p>
+
+
+                  <q-select filled dense v-model="queryStr.libdatM" use-input input-debounce="0" label="Libreria dati"
+                    clearable :options="queryStr.optionLibdat" @filter="filterLibdat"
+                    @update:model-value="onClickLibdat" behavior="menu" style="max-width: 150px; height: 10px">
                     <template v-slot:no-option>
                       <q-item>
-                        <q-item-section class="text-grey"
-                          >No results</q-item-section
-                        >
+                        <q-item-section class="text-grey">No results</q-item-section>
                       </q-item>
                     </template>
                   </q-select>
 
-                  <q-select
-                    filled
-                    dense
-                    hide-bottom-space
-                    :loading="queryStr.loadingFileM"
-                    v-model="queryStr.fileM"
-                    use-input
-                    input-debounce="0"
-                    label="File"
-                    clearable
-                    :options="queryStr.optionFile"
-                    @filter="filterFile"
-                    @update:model-value="onClickFilename"
-                    behavior="menu"
-                    style="max-width: 280px; max-height: 10px important!"
-                  >
+                  <q-select filled dense hide-bottom-space :loading="queryStr.loadingFileM" v-model="queryStr.fileM"
+                    use-input input-debounce="0" label="File" clearable :options="queryStr.optionFile"
+                    @filter="filterFile" @update:model-value="onClickFilename" behavior="menu"
+                    style="max-width: 280px; max-height: 10px important!">
                     <template v-slot:no-option>
                       <q-item>
-                        <q-item-section class="text-grey"
-                          >No results</q-item-section
-                        >
+                        <q-item-section class="text-grey">No results</q-item-section>
                       </q-item>
                     </template>
                   </q-select>
@@ -251,33 +146,18 @@
                     <p class="text-subtitle2 text-red q-ma-none">
                       {{ queryStr.where }}
                     </p>
-                    <q-toggle
-                    :disable="!queryStr.fileM"
-                      v-model="queryStr.toggleWhere"
-                      @update:model-value="changeAll"
-                      color="primary"
-                    />
+                    <q-toggle :disable="!queryStr.fileM" v-model="queryStr.toggleWhere" @update:model-value="changeAll"
+                      color="primary" />
                   </div>
                 </div>
               </q-card-section>
               <q-card-section>
                 <div class="">
-                  <q-table
-                    v-show="queryStr.toggleWhere"
-                    dense
-                    title="Seleziona campi"
-                    :rows="queryStr.rows"
-                    :columns="queryStr.columns"
-                    row-key="COLUMN_TEXT"
-                    selection="multiple"
-                    boarderd
-                    :rowsPerPage="30"
-                    :rows-per-page-options="[0, 8, 18]"
-                    style="height: 280px"
-                    v-model:selected="queryStr.selected"
-                    @update:selected="upadtePreview"
-                  />
-<!--   
+                  <q-table v-show="queryStr.toggleWhere" dense title="Seleziona campi" :rows="queryStr.rows"
+                    :columns="queryStr.columns" row-key="COLUMN_TEXT" selection="multiple" boarderd :rowsPerPage="30"
+                    :rows-per-page-options="[0, 8, 18]" style="height: 280px" v-model:selected="queryStr.selected"
+                    @update:selected="upadtePreview" />
+                  <!--   
                   <pre class="text-subtitle2">
                 <b> {{ queryStr.preview }} </b>
                 </pre>
@@ -298,15 +178,8 @@
         </div>
 
         <q-card-actions align="right">
-          <q-btn
-            :disable="queryStr.title == '' || queryStr.sqlQuery == ''"
-            flat
-            label="Save"
-            icon="save"
-            color="primary"
-            @click="insertUserQuery"
-            v-close-popup
-          />
+          <q-btn :disable="queryStr.title == '' || queryStr.sqlQuery == ''" flat label="Save" icon="save"
+            color="primary" @click="insertUserQuery" v-close-popup />
 
           <q-btn flat label="close" color="red" v-close-popup />
         </q-card-actions>
@@ -416,7 +289,7 @@ const deleteItem = (user, title) => {
         textColor: "white",
         icon: "delete",
         message: "Query cancellata con successo",
-        actions: [{ label: "Dismiss", color: "white", handler: () => {} }],
+        actions: [{ label: "Dismiss", color: "white", handler: () => { } }],
       });
 
       queryStr.deleteUserQuery(user, title);
@@ -468,7 +341,7 @@ const insertUserQuery = async () => {
     textColor: "white",
     icon: "insert",
     message: "Query inserita con successo",
-    actions: [{ label: "Dismiss", color: "white", handler: () => {} }],
+    actions: [{ label: "Dismiss", color: "white", handler: () => { } }],
   });
   queryStr.user = ref("");
   queryStr.title = ref("");

@@ -59,6 +59,14 @@ export const queryStore = defineStore("query", {
           sortable: true,
           align: "left",
         },
+        {
+          name: "VALUE",
+          label: "VALUE",
+       //   field: "KEY_COLUMN",
+          sortable: true,
+          align: "left",
+         
+        },
       ],
       columsLoading: false,
       selected: ref([]),

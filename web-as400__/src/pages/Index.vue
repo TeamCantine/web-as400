@@ -3,28 +3,13 @@
     <q-card class="q-my-md">
       <q-card-section class="q-py-lg q-px-lg">
         <div class="q-pa-lg text-h6" v-if="pref.getUserPrefAsObj.length > 0">
-          <q-option-group
-            v-model="group"
-            @update:model-value="onGroupChange"
-            :options="pref.getUserPrefAsObj"
-            color="primary"
-            inline
-          />
+          <q-option-group v-model="group" @update:model-value="onGroupChange" :options="pref.getUserPrefAsObj"
+            color="primary" inline />
         </div>
 
         <div class="q-gutter-md row">
-          <q-select
-            filled
-            v-model="model"
-            use-input
-            input-debounce="0"
-            label="LIBDAT"
-            clearable
-            :options="options"
-            @filter="filterFn"
-            @update:model-value="onClickLibdat"
-            behavior="menu"
-          >
+          <q-select filled v-model="model" use-input input-debounce="0" label="LIBDAT" clearable :options="options"
+            @filter="filterFn" @update:model-value="onClickLibdat" behavior="menu">
             <template v-slot:no-option>
               <q-item>
                 <q-item-section class="text-grey">No results</q-item-section>
@@ -32,21 +17,9 @@
             </template>
           </q-select>
 
-          <q-select
-            filled
-            v-model="fileNameModel"
-            use-input
-            :loading="loadingInputFiles"
-            :disable="loadingInputFiles"
-            input-debounce="0"
-            label="FILE"
-            autofocus
-            clearable
-            :options="fileNamesOptions"
-            @filter="filterFileNames"
-            @update:model-value="onClickFilename"
-            behavior="menu"
-          >
+          <q-select filled v-model="fileNameModel" use-input :loading="loadingInputFiles" :disable="loadingInputFiles"
+            input-debounce="0" label="FILE" autofocus clearable :options="fileNamesOptions" @filter="filterFileNames"
+            @update:model-value="onClickFilename" behavior="menu">
             <template v-slot:no-option>
               <q-item>
                 <q-item-section class="text-grey">No results</q-item-section>
@@ -55,127 +28,51 @@
           </q-select>
 
           <div class="q-ml-lg scritta">
-            <q-toggle
-              v-model="queryToggle"
-              size="xl"
-              icon="visibility"
-              label="Query first 5000 Records"
-              color="red"
-            />
+            <q-toggle v-model="queryToggle" size="xl" icon="visibility" label="Query first 5000 Records" color="red" />
           </div>
 
           <div inline class="flex flex-left">
-            <q-input
-              style="min-width: 200px"
-              square
-              color="primary"
-              label-color="primary"
-              outlined
-              clearable
-              v-model="fastWordSearch"
-              label="Fast Search"
-            >
+            <q-input style="min-width: 200px" square color="primary" label-color="primary" outlined clearable
+              v-model="fastWordSearch" label="Fast Search">
               <template v-slot:append>
                 <q-icon name="bolt" color="primary" />
               </template>
             </q-input>
 
-            <q-btn
-              :loading="loading"
-              inline
-              color="primary q-ml-sm"
-              label="Search"
-              icon-right="send"
-              @click="fastSearch"
-              :disable="
+            <q-btn :loading="loading" inline color="primary q-ml-sm" label="Search" icon-right="send"
+              @click="fastSearch" :disable="
                 fastWordSearch == null ||
                 fastWordSearch == '' ||
                 fastWordSearch.length < 3
-              "
-            />
-            <q-checkbox
-              class="q-ml-xl"
-              size="lg"
-              left-label
-              v-model="deep"
-              label="Ricerca profonda"
-            />
+              " />
+            <q-checkbox class="q-ml-xl" size="lg" left-label v-model="deep" label="Ricerca profonda" />
           </div>
         </div>
       </q-card-section>
     </q-card>
 
-    <q-table
-      v-if="!queryToggle"
-      dense
-      auto-width
-      class="text-subtitle2 my-sticky-header-table"
-      table-header-class="text-white"
-      :grid="grid"
-      :rows="rows"
-      :columns="columns"
-      row-key="name"
-      :loading="loading"
-      boarderd
-      :title="fileNameModel"
-      separator="cell"
-      :rowsPerPage="30"
-      :rows-per-page-options="[0, 8, 18]"
-      style="height: 640px"
-      :filter="filter"
-    >
+    <q-table v-if="!queryToggle" dense auto-width class="text-subtitle2 my-sticky-header-table"
+      table-header-class="text-white" :grid="grid" :rows="rows" :columns="columns" row-key="name" :loading="loading"
+      boarderd :title="fileNameModel" separator="cell" :rowsPerPage="30" :rows-per-page-options="[0, 8, 18]"
+      style="height: 640px" :filter="filter">
       <template v-slot:top-right>
-        <q-input
-          borderless
-          dense
-          debounce="300"
-          v-model="filter"
-          placeholder="Search word"
-        >
+        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search word">
           <template v-slot:append>
             <q-icon name="search" color="white" />
             <q-toggle v-model="grid" color="red" label="Grid" />
           </template>
         </q-input>
 
-        <q-btn
-          flat
-          class="q-ml-xl"
-          color="yellow"
-          icon-right="archive"
-          label="Export to csv"
-          no-caps
-          @click="exportTable"
-        />
+        <q-btn flat class="q-ml-xl" color="yellow" icon-right="archive" label="Export to csv" no-caps
+          @click="exportTable" />
       </template>
     </q-table>
 
-    <q-table
-      class="text-subtitle2 my-sticky-header-table"
-      table-header-class="text-white"
-      v-if="queryToggle"
-      :rows="queries"
-      row-key="index"
-      dense
-      auto-width
-      :grid="grid"
-      :loading="loading"
-      boarderd
-      :title="fileNameModel"
-      separator="cell"
-      style="height: 640px"
-      :filter="filter"
-      :rowsPerPage="10000"
-      :rows-per-page-options="[0, 8, 18]"
-    >
+    <q-table class="text-subtitle2 my-sticky-header-table" table-header-class="text-white" v-if="queryToggle"
+      :rows="queries" row-key="index" dense auto-width :grid="grid" :loading="loading" boarderd :title="fileNameModel"
+      separator="cell" style="height: 640px" :filter="filter" :rowsPerPage="10000" :rows-per-page-options="[0, 8, 18]">
       <template v-slot:top-right>
-        <q-input
-          borderless
-          dense
-          debounce="300"
-          v-model="filter"
-          placeholder="Search"
-        >
+        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
           <template v-slot:append>
             <q-icon name="search" color="white" />
             <q-toggle v-model="grid" color="red" label="Grid" />
@@ -310,15 +207,7 @@ export default {
     };
   },
   methods: {
-    fastSearch() {
-      this.loadFastFiles();
-    },
 
-    onGroupChange() {
-      this.model = this.group;
-      this.loadFilenames();
-      this.fileNameModel = null;
-    },
 
     exportTable() {
       // naive encoding to csv format
@@ -362,137 +251,41 @@ export default {
       return `"${formatted}"`;
     },
 
-    onClickLibdat(rr) {
-      this.loadFilenames();
-      this.fileNameModel = null;
-    },
-    onClickFilename(rr) {
-      this.loadFiles();
-    },
-    filterFileNames(val, update) {
-      if (val === "") {
-        update(() => {
-          this.fileNamesOptions = this.filenamesArray;
-        });
-        return;
-      }
+  
 
-      update(() => {
-        const needle = val.toLowerCase();
-        this.fileNamesOptions = this.filenamesArray.filter(
-          (v) => v.toLowerCase().indexOf(needle) > -1
+
+
+  /**Loads the filenames list combo based oin the libdat */
+  async loadFilenames() {
+    try {
+      const data = {
+        filename: this.model,
+      };
+      this.loadingInputFiles = true;
+      await this.as.getFilenamesAction(data);
+      this.filenamesArray = [];
+      this.as.getFilenames.forEach((element) => {
+        this.filenamesArray.push(
+          element.TABLE_NAME + " --> " + element.TABLE_TEXT
         );
       });
-    },
-    filterFn(val, update) {
-      if (val === "") {
-        update(() => {
-          this.options = this.stringOptions;
-        });
-        return;
-      }
+      this.loadingInputFiles = false;
+    } catch (error) {
+      console.log(error);
+    }
+  },
 
-      update(() => {
-        const needle = val.toLowerCase();
-        this.options = this.stringOptions.filter(
-          (v) => v.toLowerCase().indexOf(needle) > -1
-        );
-      });
-    },
 
-    async loadFiles() {
-      if (this.fileNameModel) {
-        this.loading = true;
-        this.rows = [];
-        try {
-          const data = {
-            lib: this.model,
-            fileName: this.fileNameModel.split("-->")[0].trim(),
-          };
-
-          await this.as.getFilesAction(data);
-          this.rows = this.as.getFiles;
-          //   this.loadQueries();
-          this.loading = false;
-        } catch (error) {
-          console.log(error);
-          this.loading = false;
-        }
-      }
-    },
-
-    async loadFastFiles() {
-      if (this.fastWordSearch !== "") {
-        this.loading = true;
-        this.rows = [];
-        try {
-          const data = {
-            user:
-              this.q.localStorage.getItem("currentUser") != null &&
-              this.q.localStorage.getItem("currentUser") != ""
-                ? this.q.localStorage.getItem("currentUser").trim()
-                : "",
-            search_word: this.fastWordSearch.trim(),
-            all: this.deep ? "all" : "no",
-          };
-
-          await this.as.getFastFilesAction(data);
-          this.rows = this.as.getFastFiles;
-          //   this.loadQueries();
-          this.loading = false;
-        } catch (error) {
-          console.log(error);
-          this.loading = false;
-        }
-      }
-    },
-
-    async loadQueries() {
-      if (this.fileNameModel) {
-        this.loading = true;
-        this.queries = [];
-        try {
-          const data = {
-            lib: this.model,
-            fileName: this.fileNameModel.split("-->")[0].trim(),
-          };
-          await this.as.getQueriesAction(data);
-
-          this.queries = this.as.getQueries;
-
-          this.loading = false;
-        } catch (error) {
-          console.log(error);
-          this.loading = false;
-        }
-      }
-    },
-
-    async loadFilenames() {
-      try {
-        const data = {
-          filename: this.model,
-        };
-        this.loadingInputFiles = true;
-        await this.as.getFilenamesAction(data);
-        this.filenamesArray = [];
-        this.as.getFilenames.forEach((element) => {
-          this.filenamesArray.push(
-            element.TABLE_NAME + " --> " + element.TABLE_TEXT
-          );
-        });
-        this.loadingInputFiles = false;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
-    async loadUsers() {
+    /**
+     * Loads the libdat based on the first one selected in default
+     */
+    async loadLibdat() {
       try {
         const data = {
           user: "",
         };
 
+        // Sets the current logged user
         await this.pref.setUserPref(this.q.localStorage.getItem("currentUser"));
 
         if ((await this.pref.getUserPrefAsObj.length) > 0) {
@@ -511,7 +304,150 @@ export default {
         console.log(error);
       }
     },
+  
+
+
+
+
+  /**
+   * PRTFFLD
+   * Loads the table with the filename information 
+   */
+  async loadFiles() {
+    if (this.fileNameModel) {
+      this.loading = true;
+      this.rows = [];
+      try {
+        const data = {
+          lib: this.model,
+          fileName: this.fileNameModel.split("-->")[0].trim(),
+        };
+
+        await this.as.getFilesAction(data);
+        this.rows = this.as.getFiles;
+        //   this.loadQueries();
+        this.loading = false;
+      } catch (error) {
+        console.log(error);
+        this.loading = false;
+      }
+    }
   },
+
+
+
+  /** 
+   * Query first 50000 records
+   * Loads the table with data records saved on the table selected based on the libdat and filename
+   */
+  async loadQueries() {
+    if (this.fileNameModel) {
+      this.loading = true;
+      this.queries = [];
+      try {
+        const data = {
+          lib: this.model,
+          fileName: this.fileNameModel.split("-->")[0].trim(),
+        };
+        await this.as.getQueriesAction(data);
+
+        this.queries = this.as.getQueries;
+
+        this.loading = false;
+      } catch (error) {
+        console.log(error);
+        this.loading = false;
+      }
+    }
+  },
+
+
+
+  /**
+   * Loads the table with the fast searching word
+   */
+  async loadFastFiles() {
+    if (this.fastWordSearch !== "") {
+      this.loading = true;
+      this.rows = [];
+      try {
+        const data = {
+          user:
+            this.q.localStorage.getItem("currentUser") != null &&
+              this.q.localStorage.getItem("currentUser") != ""
+              ? this.q.localStorage.getItem("currentUser").trim()
+              : "",
+          search_word: this.fastWordSearch.trim(),
+          all: this.deep ? "all" : "no",
+        };
+
+        await this.as.getFastFilesAction(data);
+        this.rows = this.as.getFastFiles;
+        //   this.loadQueries();
+        this.loading = false;
+      } catch (error) {
+        console.log(error);
+        this.loading = false;
+      }
+    }
+  },
+
+
+    onClickLibdat(rr) {
+      this.loadFilenames();
+      this.fileNameModel = null;
+    },
+
+    onClickFilename(rr) {
+      this.loadFiles();
+      this.filter = ''
+    },
+
+    filterFileNames(val, update) {
+      if (val === "") {
+        update(() => {
+          this.fileNamesOptions = this.filenamesArray;
+        });
+        return;
+      }
+
+      update(() => {
+        const needle = val.toLowerCase();
+        this.fileNamesOptions = this.filenamesArray.filter(
+          (v) => v.toLowerCase().indexOf(needle) > -1
+        );
+      });
+    },
+
+    filterFn(val, update) {
+      if (val === "") {
+        update(() => {
+          this.options = this.stringOptions;
+        });
+        return;
+      }
+
+      update(() => {
+        const needle = val.toLowerCase();
+        this.options = this.stringOptions.filter(
+          (v) => v.toLowerCase().indexOf(needle) > -1
+        );
+      });
+    },
+    /**
+     * Calls the search loading file 
+     */
+    fastSearch() {
+      this.loadFastFiles();
+    },
+
+    onGroupChange() {
+      this.model = this.group;
+      this.loadFilenames();
+      this.fileNameModel = null;
+    },
+
+},
 
   // Watcher
   watch: {
@@ -541,7 +477,7 @@ export default {
     this.as = useStore();
     this.pref = prefStore();
 
-    this.loadUsers();
+    this.loadLibdat();
 
     //this.as.getQueriesAction({lib:"wrkjexp",fileName: "role_user"})
   },
