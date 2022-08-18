@@ -137,17 +137,17 @@ router.get("/PRTFFLD_SMART", (req, res, next) => {
 
             if (result.length > 0)
                 str =
-                " c.table_schema in ('" +
-                result[0].PREFL1.trim() +
-                "', '" +
-                result[0].PREFL2.trim() +
-                "', '" +
-                result[0].PREFL3.trim() +
-                "','" +
-                result[0].PREFL4.trim() +
-                "', '" +
-                result[0].PREFL5.trim() +
-                "') AND ";
+                    " c.table_schema in ('" +
+                    result[0].PREFL1.trim() +
+                    "', '" +
+                    result[0].PREFL2.trim() +
+                    "', '" +
+                    result[0].PREFL3.trim() +
+                    "','" +
+                    result[0].PREFL4.trim() +
+                    "', '" +
+                    result[0].PREFL5.trim() +
+                    "') AND ";
 
 
             final_sql = "SELECT	c.ordinal_position,	c.column_name,	k.ordinal_position AS key_column,	k.asc_or_desc AS key_order,	c.data_type,	c.length,	c.numeric_scale,	c.is_nullable,	c.column_text,	c.COLUMN_DEFAULT,	c.table_schema,	c.table_name FROM	qsys2.syscolumns c JOIN qsys2.systables t ON c.table_schema = t.table_schema AND c.table_name = t.table_name LEFT OUTER JOIN sysibm.sqlstatistics k ON	c.table_schema = k.table_schem	AND c.table_name = k.table_name	AND c.table_name = k.index_name	AND c.column_name = k.column_name WHERE  " +
@@ -362,7 +362,7 @@ router.get("/FILENAMES", (req, res, next) => {
     console.log("GET: " + q.library.toUpperCase() + "\n");
     pool
         .query(
-            "SELECT * FROM QSYS2.SYSTABLES WHERE TABLE_SCHEMA='" +
+            "SELECT TABLE_NAME, TABLE_TEXT FROM QSYS2.SYSTABLES WHERE TABLE_SCHEMA='" +
             q.library.toUpperCase().trim() +
             "'"
         )

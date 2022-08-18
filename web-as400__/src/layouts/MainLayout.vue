@@ -47,7 +47,7 @@
 
           <q-item dense>
             <q-item-section>
-              <q-avatar size="26px" >
+              <q-avatar size="26px">
                 <span class="material-icons">
                   play_circle
                 </span>
@@ -67,7 +67,7 @@
 
 
 
-     
+
 
     </q-drawer>
 
@@ -141,6 +141,13 @@ export default defineComponent({
 
     const ret = () => {
       return arr.value
+    }
+
+    const exec = async (sql) => {
+      queryStr.loadingTable = true;
+      await queryStr.excecQuery(sql);
+      queryStr.loadingTable = false;
+      queryStr.launchQueryPrefered = true
     }
 
 
@@ -255,6 +262,7 @@ export default defineComponent({
       toggleDark,
       loadDarkMode,
       filterFn,
+      exec,
       model,
       options,
       stringOptions,

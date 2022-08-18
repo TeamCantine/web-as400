@@ -15,6 +15,7 @@ export const queryStore = defineStore("query", {
       title: ref(""),
       sqlQuery: ref(""),
       note: ref(""),
+      launchQueryPrefered: ref(false),
       // taable
       filter: ref(""),
       grid: false,
@@ -62,10 +63,10 @@ export const queryStore = defineStore("query", {
         {
           name: "VALUE",
           label: "VALUE",
-       //   field: "KEY_COLUMN",
+          //   field: "KEY_COLUMN",
           sortable: true,
           align: "left",
-         
+
         },
       ],
       columsLoading: false,
@@ -97,7 +98,7 @@ export const queryStore = defineStore("query", {
       if (this.selected.length) temp = temp.slice(0, -4);
       this.preview = temp;
 
-        this.compila()
+      this.compila()
     },
 
     sqlAutomati() {
@@ -112,7 +113,7 @@ export const queryStore = defineStore("query", {
           filename +
           (this.toggleWhere ? this.where : "");
 
-           this.compila()
+        this.compila()
       }
     },
     compila() {

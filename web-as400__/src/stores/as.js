@@ -1,5 +1,9 @@
 import { defineStore } from "pinia";
 
+// outside of a Vue file
+import { LocalStorage } from 'quasar'
+
+
 // useStore could be anything like useUser, useCart
 // the first argument is a unique id of the store across your application
 export const useStore = defineStore("as", {
@@ -184,11 +188,17 @@ export const useStore = defineStore("as", {
         },
         //Filenames
         async getFilenamesAction(data) {
+
+            // If it exsists in localstorage then use that 
+            // let value = LocalStorage.getItem(data.filename)
+            // if (value) {
+            //     this.filenames = value;
+            //     return
+            // }
+
+
             const url =
                 "http://" + window.location.hostname + ":3300/files/FILENAMES/?library=" + data.filename;
-
-            const url1 =
-                "http://localhost:3300/files/FILENAMES/?library=" + data.filename;
 
             const response = await fetch(url, {
                 method: "GET",
@@ -211,7 +221,34 @@ export const useStore = defineStore("as", {
                     throw new Error("Request failed with error code: " + response.status);
             }
 
+
+            // const limit = 4000
+            // console.log(responseData.length)
+            // if (responseData.length > limit) {
+            //     let lenIndex = 0
+            //     let firstPart = []
+            //     let secondPart = []
+            //     for (const obj of responseData) {
+            //         lenIndex++
+            //         if (lenIndex < limit)
+            //             firstPart.push(obj)
+            //         else
+            //             secondPart.push(obj)
+
+            //     }
+            //     this.filenames = responseData;
+            //     LocalStorage.set(data.filename, newjson)
+            // }
+            // else {
+            //     this.filenames = responseData;
+            //     LocalStorage.set(data.filename, responseData)
+
             this.filenames = responseData;
+            // if (responseData.length < 4000)
+            // LocalStorage.set(data.filename, responseData)
+
+
+
         },
     },
 });
